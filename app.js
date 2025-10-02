@@ -4,7 +4,7 @@
 
 // ===================== CONFIG =====================
 const CONFIG = {
-  GOOGLE_MAPS_API_KEY: 'YOUR_GOOGLE_MAPS_API_KEY',
+  GOOGLE_MAPS_API_KEY: 'AIzaSyAEb6TbKs1ex-9S8PQe2bd9k8oaXe34goQ',
   EDAMAM_APP_ID: '',
   EDAMAM_APP_KEY: '',
 };
