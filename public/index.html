@@ -1,132 +1,98 @@
 <!DOCTYPE html>
 <html lang="my">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>FoodFinder</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <header class="topbar">
-      <div class="brand">
-        <span class="logo">🍽️</span>
-        <h1>FoodFinder</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>World Food Explorer — Free‑Text Finder + Autocomplete</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo">🍽️</span><h1>World Food Explorer</h1></div>
+    <div class="search-row" style="width:45%">
+      <div class="ac">
+        <input id="dish" type="search" placeholder="ဘာမဆို ရိုက်ရှာပါ — မုန့်ဟင်းခါး, မုန့်တီ, ကော်ဖီ, လ်ဘက်ရည်, chicken noodle, korean noodle…" autocomplete="off" />
+        <ul id="acList" class="ac-list" hidden></ul>
       </div>
-      <div class="search-row">
-        <input
-          id="dish"
-          type="search"
-          placeholder="ဘာမဆိုရှာပါ ...မြန်မာ/English"
-        />
-        <button id="btnSearch" class="btn">Search</button>
+      <button id="btnSearch" class="btn">Search</button>
+    </div>
+  </header>
+
+  <main>
+    <aside class="panel">
+      <h2 class="panel-title">🍳 Meal</h2>
+      <div class="filters" id="mealFilters">
+        <label><input type="checkbox" class="f meal" value="breakfast"> နံနက်စာ (Breakfast)</label>
+        <label><input type="checkbox" class="f meal" value="lunch"> နေ့လည်စာ (Lunch)</label>
+        <label><input type="checkbox" class="f meal" value="dinner"> ညစာ (Dinner)</label>
       </div>
-    </header>
 
-    <main>
-      <aside class="panel">
-        <h2 class="panel-title">🍳 Meal</h2>
-        <div class="filters" id="mealFilters">
-          <label
-            ><input type="checkbox" class="f meal" value="breakfast" /> နံနက်စာ
-            (Breakfast)</label
-          >
-          <label
-            ><input type="checkbox" class="f meal" value="lunch" /> နေ့လည်စာ
-            (Lunch)</label
-          >
-          <label
-            ><input type="checkbox" class="f meal" value="dinner" /> ညစာ
-            (Dinner)</label
-          >
-        </div>
-
-        <h2 class="panel-title">⚙️ Filters</h2>
-        <div class="filters">
-          <label
-            ><input type="checkbox" class="f" value="openNow" /> Open now</label
-          >
-          <label
-            ><input type="checkbox" class="f" value="price1" /> Cheap ($)</label
-          >
-          <label
-            ><input type="checkbox" class="f" value="price2" /> Mid ($$)</label
-          >
-          <label
-            ><input type="checkbox" class="f" value="price3" /> Expensive
-            ($$$)</label
-          >
-          <label
-            ><input type="checkbox" class="f" value="rating4" /> ≥ 4★</label
-          >
-        </div>
-
-        <h2 class="panel-title">📍 Location</h2>
-        <div class="filters">
-          <button id="btnLocate" class="btn outline">Use my location</button>
-          <small class="muted"
-            >ခွင့်ပြုပါက အနီးစပ်ဆုံး ရရှိနိုင်တဲ့နေရာတွေ ပြပေးမယ်</small
-          >
-        </div>
-
-        <h2 class="panel-title">⭐ Favorites</h2>
-        <ul id="favList" class="favorites"></ul>
-      </aside>
-
-      <section class="content">
-        <div id="countBar" class="muted"></div>
-        <div id="suggestBar" class="muted"></div>
-        <div id="grid" class="grid"></div>
-      </section>
-    </main>
-
-    <!-- Hidden map for PlacesService (required) -->
-    <div id="map" style="width: 0; height: 0; overflow: hidden"></div>
-
-    <template id="cardTpl">
-      <article class="card">
-        <div class="card-image">
-          <img class="img" alt="" loading="lazy" />
-          <button class="fav" title="Add to favorites">☆</button>
-        </div>
-        <div class="card-body">
-          <div class="card-head">
-            <h3 class="title"></h3>
-            <span class="badge"></span>
-          </div>
-          <p class="addr"></p>
-          <div class="pill-row"></div>
-          <div class="btn-row">
-            <button class="btn outline details">Details</button>
-            <a class="btn map" target="_blank" rel="noopener">Navigate</a>
-            <a class="btn outline site" target="_blank" rel="noopener"
-              >Website</a
-            >
-          </div>
-        </div>
-      </article>
-    </template>
-
-    <dialog id="dlg" class="dialog">
-      <div class="dialog-wrap">
-        <header class="dialog-head">
-          <h3 id="dlgTitle">Details</h3>
-          <button id="dlgClose" class="icon-btn" aria-label="Close">✕</button>
-        </header>
-        <section id="dlgBody" class="dialog-body"></section>
+      <h2 class="panel-title">⚙️ Filters</h2>
+      <div class="filters">
+        <label><input type="checkbox" class="f" value="openNow"> Open now</label>
+        <label><input type="checkbox" class="f" value="price1"> Cheap ($)</label>
+        <label><input type="checkbox" class="f" value="price2"> Mid ($$)</label>
+        <label><input type="checkbox" class="f" value="price3"> Expensive ($$$)</label>
+        <label><input type="checkbox" class="f" value="rating4"> ≥ 4★</label>
       </div>
-    </dialog>
 
-    <script type="module" src="app.js"></script>
-    <!-- Maps JS (Replace YOUR_GOOGLE_MAPS_API_KEY) -->
-    <script
-      async
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEb6TbKs1ex-9S8PQe2bd9k8oaXe34goQ&libraries=places&callback=__WFE_onMapsReady"
-    ></script>
-  </body>
+      <h2 class="panel-title">📍 Location</h2>
+      <div class="filters">
+        <button id="btnLocate" class="btn outline">Use my location</button>
+        <small class="muted">ခွင့်ပြုပါက အနီးစပ်ဆုံး ရရှိနိုင်တဲ့နေရာတွေ ပြပေးမယ်</small>
+      </div>
+
+      <h2 class="panel-title">⭐ Favorites</h2>
+      <ul id="favList" class="favorites"></ul>
+    </aside>
+
+    <section class="content">
+      <div id="countBar" class="muted"></div>
+      <div id="suggestBar" class="muted"></div>
+      <div id="grid" class="grid"></div>
+    </section>
+  </main>
+
+  <!-- Hidden map for PlacesService (required) -->
+  <div id="map" style="width:0;height:0;overflow:hidden"></div>
+
+  <template id="cardTpl">
+    <article class="card">
+      <div class="card-image">
+        <img class="img" alt="" loading="lazy" />
+        <button class="fav" title="Add to favorites">☆</button>
+      </div>
+      <div class="card-body">
+        <div class="card-head">
+          <h3 class="title"></h3>
+          <span class="badge"></span>
+        </div>
+        <p class="addr"></p>
+        <div class="pill-row"></div>
+        <div class="btn-row">
+          <button class="btn outline details">Details</button>
+          <a class="btn map" target="_blank" rel="noopener">Navigate</a>
+          <a class="btn outline site" target="_blank" rel="noopener">Website</a>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <dialog id="dlg" class="dialog">
+    <div class="dialog-wrap">
+      <header class="dialog-head">
+        <h3 id="dlgTitle">Details</h3>
+        <button id="dlgClose" class="icon-btn" aria-label="Close">✕</button>
+      </header>
+      <section id="dlgBody" class="dialog-body"></section>
+    </div>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+  <!-- Maps JS (Replace YOUR_GOOGLE_MAPS_API_KEY) -->
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEb6TbKs1ex-9S8PQe2bd9k8oaXe34goQ&libraries=places&callback=__WFE_onMapsReady"></script>
+</body>
 </html>
