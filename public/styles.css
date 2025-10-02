@@ -50,7 +50,12 @@ body {
 .search-row {
   display: flex;
   gap: 0.5rem;
-  width: min(980px, 100%);
+  width: 45%;   /* ခပ်ရှည်ရှည်လုပ်ထား */
+  max-width: 980px;
+  /* width: min(980px, 100%); */
+}
+.search-row input {
+  flex: 1;
 }
 main {
   display: grid;
