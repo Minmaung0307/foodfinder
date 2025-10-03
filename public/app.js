@@ -1,8 +1,14 @@
-// Free‑Text Finder + Bilingual Autocomplete
+// Free-Text Finder + Bilingual Autocomplete (Fixed)
+// - All DOM lookups happen after DOMContentLoaded
+// - Global Maps callback exposed on window
+// - No "input before initialization" errors
+// - Single source of truth for event bindings
+
+// ===================== CONFIG & DATA =====================
 const CONFIG = { GOOGLE_MAPS_API_KEY: 'AIzaSyAEb6TbKs1ex-9S8PQe2bd9k8oaXe34goQ', EDAMAM_APP_ID: '', EDAMAM_APP_KEY: '' };
 const DEFAULT_CENTER = { name: 'Yangon', lat: 16.8409, lng: 96.1735 };
 const SUGGESTIONS = ['fried rice','mohinga','shan noodle','ramen','sushi','bbq','hotpot','noodle','curry','tea shop','juice','dessert'];
-// Autocomplete vocabulary (MM + EN). Add as many as you like.
+
 const VOCAB = [
   // Burmese core
   'မုန့်ဟင်းခါး','မုန့်တီ','မုန့်ချိုးလိမ်','မုန့်လှော်','မုန့်သလောက်','ကော်ဖီ','လ်ဘက်ရည်','နို့ဆီကျို','ရေညှိထမင်း','ထမင်းကြော်','ရှမ်းခေါက်ဆွဲ','လက်ဖက်သုပ်','ငပိသုပ်','ဝက်သားကာဘော','ကြက်သားခေါက်ဆွဲ','ခေါက်ဆွဲသုတ်','ကောက်ညှင်းပေါင်း','အုန်းနို့သုပ်',
@@ -14,7 +20,7 @@ const VOCAB = [
   'chicken noodle','korean noodle','ramen','udon','soba','sushi','donburi','curry rice','naan','biryani','tandoori',
   'burger','pizza','pasta','steak','salad','sandwich','dessert','ice cream'
 ];
-// Myanmar → English hint groups (for query expansion)
+
 const MM_HINTS = [
   { mm: ['ဖျော်ရည်','သီးဖျော်ရည်','မန်ကျည်း','မာလကာ'], en: ['juice','smoothie','fruit juice','mango','papaya'] },
   { mm: ['ခေါက်ဆွဲ','ကြက်သားခေါက်ဆွဲ'], en: ['noodle','chicken noodle'] },
@@ -23,6 +29,7 @@ const MM_HINTS = [
   { mm: ['ကော်ဖီ','လ်ဘက်ရည်'], en: ['coffee','milk tea','tea','latte'] },
 ];
 
+// ===================== HELPERS =====================
 const $ = (s,p=document)=>p.querySelector(s);
 const $$ = (s,p=document)=>Array.from(p.querySelectorAll(s));
 const el = (t,c)=>Object.assign(document.createElement(t),c?{className:c}:{});
@@ -30,14 +37,20 @@ const priceSymbols = n => n==null? '—' : '₭'.repeat(n).slice(0,4).replace(/�
 const navUrl = (lat,lng)=>`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 const chip = (t)=>{const c=el('span','chip'); c.textContent=t; return c};
 
+// ===================== STATE =====================
 let map, places, center=DEFAULT_CENTER, results=[];
-const FAV_KEY='wfe:fav'; let FAV = new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]'));
+const FAV_KEY='wfe:fav';
+let FAV = new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]'));
 function saveFav(){localStorage.setItem(FAV_KEY, JSON.stringify([...FAV]));}
 
-// ===================== Maps Init =====================
-window.__WFE_onMapsReady=()=>{
-  map=new google.maps.Map(document.getElementById('map'),{center,zoom:14});
-  places=new google.maps.places.PlacesService(map);
+// ===================== MAPS CALLBACK =====================
+window.__WFE_onMapsReady = function () {
+  if (!window.google || !google.maps) return;
+  const mapEl = document.getElementById('map');
+  if (mapEl) {
+    map = new google.maps.Map(mapEl, { center, zoom: 14 });
+    places = new google.maps.places.PlacesService(map);
+  }
   tryLocate();
 };
 
@@ -45,55 +58,19 @@ function tryLocate(){
   if(!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(pos=>{
     center={name:'Here',lat:pos.coords.latitude,lng:pos.coords.longitude};
-    map.setCenter({lat:center.lat,lng:center.lng});
+    if (map) map.setCenter({lat:center.lat,lng:center.lng});
   },()=>{}, {enableHighAccuracy:true,timeout:6000});
 }
 
-// ===================== Autocomplete =====================
-const acList = $('#acList');
-// const input = $('#dish');
-let acIndex = -1;
-
+// ===================== AUTOCOMPLETE CORE (pure) =====================
 function makeSuggestions(query){
   const q = (query||'').trim().toLowerCase();
   if (!q) return [];
-  // rank: startsWith > includes; limit 12
   const starts = VOCAB.filter(v=> v.toLowerCase().startsWith(q));
   const inc = VOCAB.filter(v=> !v.toLowerCase().startsWith(q) && v.toLowerCase().includes(q));
-  const pool = [...new Set([...starts, ...inc])];
-  return pool.slice(0, 12);
+  return [...new Set([...starts, ...inc])].slice(0,12);
 }
 
-function showAC(items){
-  acList.innerHTML='';
-  if (!items.length){ acList.hidden=true; return; }
-  items.forEach((txt,i)=>{
-    const li = document.createElement('li');
-    li.role='option';
-    li.textContent = txt;
-    if (i===acIndex) li.setAttribute('aria-selected','true');
-    li.addEventListener('mousedown', e=>{ e.preventDefault(); input.value = txt; acList.hidden=true; });
-    li.addEventListener('click', ()=> { input.value = txt; acList.hidden=true; search(); });
-    acList.appendChild(li);
-  });
-  acList.hidden=false;
-}
-
-input.addEventListener('input', ()=>{
-  acIndex = -1;
-  showAC(makeSuggestions(input.value));
-});
-input.addEventListener('keydown', (e)=>{
-  const items = [...acList.querySelectorAll('li')];
-  if (e.key==='ArrowDown'){ e.preventDefault(); acIndex = Math.min(items.length-1, acIndex+1); showAC(items.map(it=>it.textContent)); }
-  else if (e.key==='ArrowUp'){ e.preventDefault(); acIndex = Math.max(0, acIndex-1); showAC(items.map(it=>it.textContent)); }
-  else if (e.key==='Enter'){
-    if (!acList.hidden && acIndex>=0){ e.preventDefault(); input.value = items[acIndex].textContent; acList.hidden=true; search(); }
-  } else if (e.key==='Escape'){ acList.hidden=true; }
-});
-document.addEventListener('click', (e)=>{ if (!e.target.closest('.ac')) acList.hidden = true; });
-
-// ===================== Query Expansion =====================
 function expandQueries(raw){
   const term=(raw||'').trim();
   const variants=new Set();
@@ -116,33 +93,31 @@ function expandQueries(raw){
   return [...variants].slice(0,10);
 }
 
-// ===================== Search (multi) =====================
-$('#btnSearch').addEventListener('click', search);
-input.addEventListener('keydown', e=>{ if(e.key==='Enter' && acList.hidden) search(); });
-$('#btnLocate').addEventListener('click', ()=>{
-  if(!navigator.geolocation){ alert('Geolocation not supported'); return; }
-  navigator.geolocation.getCurrentPosition(pos=>{
-    center={name:'Here',lat:pos.coords.latitude,lng:pos.coords.longitude};
-    map.setCenter({lat:center.lat,lng:center.lng});
-    search();
-  }, err=> alert('Location denied'), {enableHighAccuracy:true, timeout:8000});
-});
-
+// ===================== SEARCH FLOW (no global input dependencies) =====================
 function search(){
-  const raw = input.value;
+  const inputEl = document.getElementById('dish');
+  const raw = inputEl ? inputEl.value : '';
   const queries = expandQueries(raw);
-  if(!raw) $('#suggestBar').textContent = `Tip: Searching popular nearby: “${queries[0]}”`;
-  else $('#suggestBar').textContent = `Trying: ${queries.map(q=>`“${q}”`).join(' · ')}`;
-  $('#countBar').textContent = 'Searching…';
+  const suggestBar = $('#suggestBar');
+  if (suggestBar) {
+    suggestBar.textContent = raw
+      ? `Trying: ${queries.map(q=>`“${q}”`).join(' · ')}`
+      : `Tip: Searching popular nearby: “${queries[0]}”`;
+  }
+  const countBar = $('#countBar');
+  if (countBar) countBar.textContent = 'Searching…';
+
   runTextSearches(queries).then(list=>{
     results = list;
     applyFiltersAndRender(raw || queries[0]);
   }).catch(()=>{
-    results = []; render([], raw); $('#countBar').textContent = 'No results.';
+    results = []; render([], raw);
+    if (countBar) countBar.textContent = 'No results.';
   });
 }
 
 async function runTextSearches(qList){
+  if (!places) return [];
   const seen=new Set(); const out=[];
   for(const q of qList){
     const res = await new Promise((resolve)=>{
@@ -184,9 +159,9 @@ function getPlaceDetails(placeId){
   });
 }
 
-// ===================== Filters & Render =====================
+// ===================== FILTER & RENDER =====================
 $$('.f').forEach(cb=> cb.addEventListener('change', ()=> applyFiltersAndRender($('#dish').value)));
-$('#dlgClose').addEventListener('click', ()=> $('#dlg').close());
+$('#dlgClose')?.addEventListener('click', ()=> $('#dlg').close());
 
 function applyFiltersAndRender(term){
   const flags = new Set($$('.f:checked').map(x=>x.value));
@@ -202,7 +177,7 @@ function applyFiltersAndRender(term){
 }
 
 function render(list, term){
-  const grid = $('#grid'); grid.innerHTML='';
+  const grid = $('#grid'); if (!grid) return; grid.innerHTML='';
   const tpl = $('#cardTpl');
   list.forEach(r=>{
     const node = tpl.content.cloneNode(true);
@@ -222,11 +197,12 @@ function render(list, term){
     favBtn.addEventListener('click', ()=>{ if(FAV.has(favKey)) FAV.delete(favKey); else FAV.add(favKey); saveFav(); updateFavUI(); render(list, term); });
     grid.appendChild(node);
   });
-  $('#countBar').textContent = `${list.length} result(s) for “${(term||'popular nearby').trim()}”`;
+  const countBar = $('#countBar');
+  if (countBar) countBar.textContent = `${list.length} result(s) for “${(term||'popular nearby').trim()}”`;
 }
 
 function updateFavUI(){
-  const ul = $('#favList'); ul.innerHTML='';
+  const ul = $('#favList'); if (!ul) return; ul.innerHTML='';
   [...FAV].forEach(k=>{
     const li = el('li');
     const a = el('a'); a.href='#'; a.textContent = k; a.addEventListener('click', e=>{e.preventDefault();});
@@ -236,12 +212,12 @@ function updateFavUI(){
 }
 updateFavUI();
 
-// ===================== Details (generic) =====================
+// ===================== DETAILS =====================
 async function openDetails(rawTerm){
-  const body = $('#dlgBody'); body.innerHTML='';
+  const body = $('#dlgBody'); if (!body) return; body.innerHTML='';
   const head = el('div','recipe-head');
   const title = el('h4'); title.textContent = rawTerm || 'Dish details';
-  const meta = el('div','recipe-meta'); meta.append(chip('Free‑text search'), chip('Nearby places'));
+  const meta = el('div','recipe-meta'); meta.append(chip('Free-text search'), chip('Nearby places'));
   head.append(title, meta);
   const note = document.createElement('p'); note.className='muted'; note.textContent = 'Tips: Menu photos & staff can confirm availability.';
   body.append(head, note);
@@ -253,59 +229,64 @@ async function openDetails(rawTerm){
       const more = document.createElement('p'); more.className='muted'; more.textContent = `Est. calories: ${Math.round(data.calories||0)} kcal (Edamam approx)`; body.append(more);
     }catch(e){}
   }
-  document.getElementById('dlgTitle').textContent = 'Details';
-  document.getElementById('dlg').showModal();
+  $('#dlgTitle')?.textContent = 'Details';
+  $('#dlg')?.showModal();
 }
 
-const btnToggle = document.getElementById('btnToggleSearch');
-const searchRow = document.querySelector('.search-row');
-// const input = document.getElementById('dish');
-const btnSearch = document.getElementById('btnSearch');
-
-function doSearch() {
-  const val = input.value.trim();
-  if (!val) return;
-  search(); // reuse existing search() function
-  if (window.innerWidth <= 768) searchRow.classList.add('hidden');
-}
-
-btnToggle.addEventListener('click', () => {
-  searchRow.classList.toggle('hidden');
-  if (!searchRow.classList.contains('hidden')) {
-    input.focus();
-  }
-});
-
-btnSearch.addEventListener('click', doSearch);
-input.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    doSearch();
-  }
-});
-
-// Toggle SearchBar (mobile first)
-document.addEventListener("DOMContentLoaded", () => {
+// ===================== UI BINDINGS (MOBILE-FIRST) =====================
+document.addEventListener('DOMContentLoaded', () => {
   const btnToggle = document.getElementById('btnToggleSearch');
   const searchRow = document.querySelector('.search-row');
   const input = document.getElementById('dish');
   const btnSearch = document.getElementById('btnSearch');
+  const acList = document.getElementById('acList');
 
+  // Guards
+  if (!btnToggle || !searchRow || !input || !btnSearch || !acList) {
+    console.warn('Search UI elements not found. Check IDs: btnToggleSearch, .search-row, dish, btnSearch, acList');
+    return;
+  }
+
+  // Toggle search bar (mobile)
+  btnToggle.addEventListener('click', () => {
+    searchRow.classList.toggle('hidden');
+    if (!searchRow.classList.contains('hidden')) input.focus();
+  });
+
+  // Search actions
   function doSearch() {
     const val = input.value.trim();
     if (!val) return;
     search();
     if (window.innerWidth <= 768) searchRow.classList.add('hidden');
   }
-
-  btnToggle.addEventListener('click', () => {
-    searchRow.classList.toggle('hidden');
-    if (!searchRow.classList.contains('hidden')) {
-      input.focus();
-    }
-  });
-
   btnSearch.addEventListener('click', doSearch);
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') doSearch();
+  input.addEventListener('keydown', (e)=>{ if (e.key==='Enter') doSearch(); });
+
+  // Autocomplete
+  let acIndex = -1;
+  function renderAC(items){
+    acList.innerHTML='';
+    if (!items.length){ acList.hidden = true; return; }
+    items.forEach((txt,i)=>{
+      const li = document.createElement('li');
+      li.role='option'; li.textContent = txt;
+      if (i===acIndex) li.setAttribute('aria-selected','true');
+      li.addEventListener('mousedown', e=>{ e.preventDefault(); input.value = txt; acList.hidden=true; });
+      li.addEventListener('click', ()=>{ input.value = txt; acList.hidden=true; doSearch(); });
+      acList.appendChild(li);
+    });
+    acList.hidden = false;
+  }
+
+  input.addEventListener('input', ()=>{ acIndex = -1; renderAC(makeSuggestions(input.value)); });
+  input.addEventListener('keydown', (e)=>{
+    const items = [...acList.querySelectorAll('li')];
+    if (e.key==='ArrowDown'){ e.preventDefault(); acIndex = Math.min(items.length-1, acIndex+1); renderAC(items.map(it=>it.textContent)); }
+    else if (e.key==='ArrowUp'){ e.preventDefault(); acIndex = Math.max(0, acIndex-1); renderAC(items.map(it=>it.textContent)); }
+    else if (e.key==='Enter'){
+      if (!acList.hidden && acIndex>=0){ e.preventDefault(); input.value = items[acIndex].textContent; acList.hidden=true; doSearch(); }
+    } else if (e.key==='Escape'){ acList.hidden=true; }
   });
+  document.addEventListener('click', (e)=>{ if (!e.target.closest('.ac')) acList.hidden = true; });
 });
