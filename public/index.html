@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FoodExplorer</title>
+  <title>World Food Explorer</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,52 +11,52 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="logo">🍽️</span><h1>FoodExplorer</h1></div>
+    <div class="brand"><span class="logo">🍽️</span><h1>World Food Explorer</h1></div>
 
-    <!-- Single search bar with icon button inside -->
-    <div class="search-row" style="width:75%">
-      <div class="ac">
-        <input id="dish" type="search" placeholder="Search: မုန့်/မုန့်တီ/coffee/fried rice..." autocomplete="off" />
-        <ul id="acList" class="ac-list" hidden></ul>
+    <!-- Search + Controls in topbar -->
+    <div class="topbar-controls">
+      <div class="search-row">
+        <div class="ac">
+          <input id="dish" type="search" placeholder="Search: မုန့်/မုန့်တီ/coffee/fried rice..." autocomplete="off" />
+          <ul id="acList" class="ac-list" hidden></ul>
+        </div>
+        <button id="btnSearch" class="icon-btn" aria-label="Search">🔍</button>
       </div>
-      <button id="btnSearch" class="icon-btn" aria-label="Search">🔍</button>
+
+      <div class="control-row">
+        <label class="select-wrap">
+          <span class="lbl">Meal</span>
+          <select id="mealSelect">
+            <option value="">Any</option>
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+          </select>
+        </label>
+
+        <div class="filter-wrap">
+          <button id="btnFilter" class="btn outline">Filters ⚙️</button>
+          <div id="filterMenu" class="filter-menu" hidden>
+            <label><input type="checkbox" class="f" value="openNow"> Open now</label>
+            <label><input type="checkbox" class="f" value="price1"> $</label>
+            <label><input type="checkbox" class="f" value="price2"> $$</label>
+            <label><input type="checkbox" class="f" value="price3"> $$$</label>
+            <label><input type="checkbox" class="f" value="rating4"> ≥ 4★</label>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main>
-    <aside class="panel">
-      <h2 class="panel-title">🍳 Meal</h2>
-      <div class="filters" id="mealFilters">
-        <label><input type="checkbox" class="f meal" value="breakfast"> နံနက်စာ (Breakfast)</label>
-        <label><input type="checkbox" class="f meal" value="lunch"> နေ့လည်စာ (Lunch)</label>
-        <label><input type="checkbox" class="f meal" value="dinner"> ညစာ (Dinner)</label>
-      </div>
-
-      <h2 class="panel-title">⚙️ Filters</h2>
-      <div class="filters">
-        <label><input type="checkbox" class="f" value="openNow"> Open now</label>
-        <label><input type="checkbox" class="f" value="price1"> Cheap ($)</label>
-        <label><input type="checkbox" class="f" value="price2"> Mid ($$)</label>
-        <label><input type="checkbox" class="f" value="price3"> Expensive ($$$)</label>
-        <label><input type="checkbox" class="f" value="rating4"> ≥ 4★</label>
-      </div>
-
-      <h2 class="panel-title">📍 Location</h2>
-      <div class="filters">
-        <button id="btnLocate" class="btn outline">Use my location</button>
-        <small class="muted">ခွင့်ပြုပါက အနီးစပ်ဆုံး ရရှိနိုင်တဲ့နေရာတွေ ပြပေးမယ်</small>
-      </div>
-
-      <h2 class="panel-title">⭐ Favorites</h2>
-      <ul id="favList" class="favorites"></ul>
-    </aside>
-
-    <section class="content">
-      <div id="countBar" class="muted"></div>
-      <div id="suggestBar" class="muted"></div>
-      <div id="grid" class="grid"></div>
-    </section>
+  <main class="content-only">
+    <div id="countBar" class="muted"></div>
+    <div id="suggestBar" class="muted"></div>
+    <div id="grid" class="grid"></div>
   </main>
+
+  <footer class="footer">
+    <button id="btnLocate" class="btn solid">📍 Use my location</button>
+  </footer>
 
   <!-- Hidden map for PlacesService (required) -->
   <div id="map" style="width:0;height:0;overflow:hidden"></div>
@@ -93,12 +93,9 @@
     </div>
   </dialog>
 
-  <!-- Use module so we can still expose window.__WFE_onMapsReady inside -->
-  <script type="module" src="app.js"></script>
-  <!-- Google Maps loader: async best-practice + callback -->
+  <script src="app.js"></script>
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEb6TbKs1ex-9S8PQe2bd9k8oaXe34goQ&libraries=places&callback=__WFE_onMapsReady&loading=async"
-    async defer>
-  </script>
+    async defer></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-// World Food Explorer – unified (no duplicates), global callback set
+// Topbar filters version – no sidebar
 const DEFAULT_CENTER = { name: 'Yangon', lat: 16.8409, lng: 96.1735 };
 let map, places, center = DEFAULT_CENTER, results = [];
 
@@ -17,12 +17,7 @@ window.__WFE_onMapsReady = function(){
     map = new google.maps.Map(mapEl, { center, zoom: 14 });
     places = new google.maps.places.PlacesService(map);
   }
-  if (navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(
-      pos=>{ center={name:'Here',lat:pos.coords.latitude,lng:pos.coords.longitude}; map && map.setCenter(center); },
-      ()=>{}, {enableHighAccuracy:true, timeout:6000}
-    );
-  }
+  // Use location from footer button
 };
 
 // Autocomplete dictionary
@@ -46,7 +41,7 @@ function makeSuggestions(q){
 const SUGGESTIONS = ['fried rice','mohinga','shan noodle','ramen','sushi','bbq','noodle','curry','juice','dessert'];
 const MM_HINTS = [
   { mm: ['ဖျော်ရည်','သီးဖျော်ရည်','မန်ကျည်း','မာလကာ'], en: ['juice','smoothie','fruit juice','mango','papaya'] },
-  { mm: ['ခေါက်ဆွဲ'], en: ['noodle'] },
+  { mm: [' ခေါက်ဆွဲ','ခေါက်ဆွဲ'], en: ['noodle'] },
   { mm: ['မုန့်'], en: ['noodle','rice noodle','snack'] },
   { mm: ['သုပ်','ထမင်း'], en: ['salad','rice'] },
 ];
@@ -171,6 +166,40 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const input = $('#dish');
   const btnSearch = $('#btnSearch');
   const acList = $('#acList');
+  const btnFilter = $('#btnFilter');
+  const filterMenu = $('#filterMenu');
+  const mealSelect = $('#mealSelect');
+  const btnLocate = $('#btnLocate');
+  const dlgClose = $('#dlgClose');
+  if(dlgClose){ dlgClose.addEventListener('click', ()=> $('#dlg')?.close()); }
+
+  if(btnFilter && filterMenu){
+    btnFilter.addEventListener('click', ()=>{
+      filterMenu.hidden = !filterMenu.hidden;
+    });
+    document.addEventListener('click', (e)=>{
+      if(!e.target.closest('.filter-wrap')) filterMenu.hidden = true;
+    });
+    $$('.f', filterMenu).forEach(cb=> cb.addEventListener('change', ()=> applyFiltersAndRender(input?.value)));
+  }
+
+  if(mealSelect){
+    mealSelect.addEventListener('change', ()=>{
+      search();
+    });
+  }
+
+  if(btnLocate){
+    btnLocate.addEventListener('click', ()=>{
+      if(!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition(pos=>{
+        center = { name:'Here', lat:pos.coords.latitude, lng:pos.coords.longitude };
+        if (map) map.setCenter(center);
+        search(); // refresh results for new center
+      });
+    });
+  }
+
   if(!input || !btnSearch || !acList) return;
 
   const doSearch = ()=>{ const v=input.value.trim(); if(!v) return; search(); };
@@ -199,7 +228,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   function refreshSel(){
     [...acList.children].forEach((li,i)=>{
-      if(i===acIndex) li.setAttribute('aria-selected','true'); else li.removeAttribute('aria-selected');
+    if(i===acIndex) li.setAttribute('aria-selected','true'); else li.removeAttribute('aria-selected');
     });
   }
   input.addEventListener('input', ()=>{ acIndex=-1; renderAC(makeSuggestions(input.value)); });
