@@ -377,72 +377,116 @@ function render(list, term) {
       term || "popular nearby"
     ).trim()}”`;
 }
-function openDetails(rawTerm){
-  const body=$('#dlgBody'); if(!body) return; body.innerHTML='';
+// ---- Minimal, reliable Details renderer (drop-in) ----
+function openDetails(rawTerm) {
+  const dlg = document.getElementById('dlg');
+  const titleEl = document.getElementById('dlgTitle');
+  const body = document.getElementById('dlgBody');
+  if (!dlg || !titleEl || !body) return;
 
-  const term = (rawTerm||'').trim();
-  const r = findRecipe(term);
+  // 1) clear and set basic header
+  body.innerHTML = '';
+  const term = (rawTerm || '').trim();
+  titleEl.textContent = 'Details';
 
-  // Header
-  const head=el('div','recipe-head');
-  const title=el('h4'); title.textContent = r?.display || (term || 'Details');
-  const meta=el('div','recipe-meta');
-  meta.append(chip('Ingredients'), chip('Nutrition Facts'));
-  head.append(title, meta);
-  body.append(head);
+  // 2) tiny built-in dict (MM/EN) — extend later as you like
+  const BOOK = [
+    {
+      name: 'မုန့်ဟင်းခါး (Mohinga)',
+      keys: ['မုန့်ဟင်းခါး','mohinga','mont hingar','fish noodle soup'],
+      ingredients: ['ငါးဟင်းရည်','လေးပါးသီး','နနွင်းမှုန့်','ပဲမှုန့်','မုန့် (rice noodle)','ကြက်သွန်','ခရမ်းချဉ်သီး','သံပုရာ/လိမ္မော်'],
+      nutrition: { calories: 420, protein: 22, carbs: 58, fat: 12, fiber: 5, sodium: 980 },
+      notes: 'မြန်မာရိုးရာ ငါးရည်ခေါက်ဆွဲ—နံ့အသက်ပြင်း၊ အာဟာရ နှင့် sodium အလယ်အလတ်။'
+    },
+    {
+      name: 'မုန့်တီ (Mont Ti)',
+      keys: ['မုန့်တီ','mont ti','mont tee','rice vermicelli salad'],
+      ingredients: ['မုန့် (rice vermicelli)','ပဲမှုန့်မှုန်','ကြက်သွန်ဖြူ/နီ','ငရုတ်သီးမှုန့်','သံပုရာ/သလောက်'],
+      nutrition: { calories: 380, protein: 10, carbs: 66, fat: 8, fiber: 4, sodium: 720 },
+      notes: 'အေအေးမုန့်သုတ်စတိုင်—ချဉ်နဲ့ကြိတ်မှုန့်အလှဆင်။'
+    },
+    {
+      name: 'Shan Noodle (ရှမ်းခေါက်ဆွဲ)',
+      keys: ['ရှမ်းခေါက်ဆွဲ','shan noodle','shan khauk swe'],
+      ingredients: ['မုန့်','ကြက်/ဝက်အလွိုင်း','ပဲမှုန့်ရည်','ငရုတ်ဆီ','မြေပဲ','ချဉ်ထန်းနို့'],
+      nutrition: { calories: 520, protein: 24, carbs: 70, fat: 16, fiber: 5, sodium: 900 },
+      notes: 'ပဲရည်အခြေခံ—အနံ့အသက်ပြင်း။ မြေပဲကြောင့် အဟင်းချိုရောင်တက်။'
+    },
+    {
+      name: 'Fried Rice (ထမင်းကြော်)',
+      keys: ['fried rice','ထမင်းကြော်'],
+      ingredients: ['အေးအေးထမင်း','ကြက်ဥ','ကြက်သွန်','ဆီ','အလွှာအမဲ/ကြက်/ပုစွန် (option)'],
+      nutrition: { calories: 650, protein: 18, carbs: 90, fat: 22, fiber: 3, sodium: 1100 },
+      notes: 'portion ကြီးရင် ကယ်လိုရီမြင့်—ဆီနှုန်းထိန်းပါ။'
+    },
+    {
+      name: 'Coffee (ကော်ဖီ)',
+      keys: ['coffee','ကော်ဖီ'],
+      ingredients: ['ကော်ဖီမီး','ရေ','နို့/condensed milk (option)','ချိုစပ်'],
+      nutrition: { calories: 5, protein: 0, carbs: 0, fat: 0, fiber: 0, sodium: 5 },
+      notes: 'Black coffee ကယ်လိုရီနည်း; နို့/ချိုထည့်ရင် တက်။'
+    },
+    {
+      name: 'Milk Tea (လ္ဘက်ရည်)',
+      keys: ['milk tea','လ္ဘက်ရည်','bubble tea','boba'],
+      ingredients: ['လက်ဖက်','နို့','condensed milk','ချို','တပော့ (option)'],
+      nutrition: { calories: 220, protein: 4, carbs: 36, fat: 7, fiber: 0, sodium: 80 },
+      notes: 'တပော့ထည့်လျှင် ကယ်လိုရီတက်—portion သတိ။'
+    }
+  ];
 
-  if (r) {
+  const lower = term.toLowerCase();
+  const hit = BOOK.find(item => item.keys.some(k => lower.includes(k.toLowerCase()) || k.toLowerCase().includes(lower)));
+
+  // 3) build sections (always show something)
+  const h4 = document.createElement('h4');
+  h4.textContent = hit ? hit.name : (term || 'Details');
+  body.appendChild(h4);
+
+  if (hit) {
     // Ingredients
-    const ingWrap = el('div');
-    const h = el('h5'); h.textContent = 'Ingredients';
-    const ul = el('ul','shop-list');
-    r.ingredients.forEach(i=> {
-      const li = document.createElement('li'); li.textContent = i; ul.appendChild(li);
-    });
-    ingWrap.append(h, ul);
-    body.append(ingWrap);
+    const h5a = document.createElement('h5'); h5a.textContent = 'Ingredients';
+    const ul = document.createElement('ul'); ul.className = 'shop-list';
+    hit.ingredients.forEach(x => { const li = document.createElement('li'); li.textContent = x; ul.appendChild(li); });
+    body.append(h5a, ul);
 
-    // Nutrition Facts
-    const n = r.nutrition || {};
-    const nf = el('div');
-    const h2 = el('h5'); h2.textContent = 'Nutrition (approx per serving)';
-    const grid = el('div'); grid.style.display='grid'; grid.style.gridTemplateColumns='repeat(auto-fit,minmax(130px,1fr))'; grid.style.gap='.4rem';
-    const cell = (label,val)=>{ const d=el('div'); d.className='pill'; d.textContent=`${label}: ${val}`; return d; };
+    // Nutrition
+    const h5b = document.createElement('h5'); h5b.textContent = 'Nutrition (approx per serving)';
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fit,minmax(130px,1fr))';
+    grid.style.gap = '.4rem';
+    const cell = (k, v) => { const d = document.createElement('div'); d.className = 'pill'; d.textContent = `${k}: ${v}`; return d; };
+    const n = hit.nutrition || {};
     grid.append(
-      cell('Calories', `${n.calories||'—'} kcal`),
-      cell('Protein', `${n.protein_g||'—'} g`),
-      cell('Carbs', `${n.carbs_g||'—'} g`),
-      cell('Fat', `${n.fat_g||'—'} g`),
-      cell('Fiber', `${n.fiber_g||'—'} g`),
-      cell('Sodium', `${n.sodium_mg||'—'} mg`)
+      cell('Calories', (n.calories ?? '—') + ' kcal'),
+      cell('Protein', (n.protein ?? '—') + ' g'),
+      cell('Carbs',   (n.carbs   ?? '—') + ' g'),
+      cell('Fat',     (n.fat     ?? '—') + ' g'),
+      cell('Fiber',   (n.fiber   ?? '—') + ' g'),
+      cell('Sodium',  (n.sodium  ?? '—') + ' mg')
     );
-    nf.append(h2, grid);
-    body.append(nf);
+    body.append(h5b, grid);
 
-    // Allergens & Notes
-    if (r.allergens?.length || r.notes) {
-      const more = el('div');
-      if (r.allergens?.length) {
-        const a = el('p'); a.innerHTML = `<strong>Allergens:</strong> ${r.allergens.join(', ')}`;
-        more.append(a);
-      }
-      if (r.notes) {
-        const t = el('p'); t.className='muted'; t.textContent = r.notes;
-        more.append(t);
-      }
-      body.append(more);
+    // Notes
+    if (hit.notes) {
+      const p = document.createElement('p'); p.className = 'muted'; p.textContent = hit.notes;
+      body.appendChild(p);
     }
   } else {
-    // Fallback when we don't have a recipe
-    const p = el('p'); p.textContent = 'This dish is not in the built-in list yet. Showing nearby places with ratings, prices, and photos. You can also try a different spelling (MM/EN).';
-    body.append(p);
+    // fallback
+    const p = document.createElement('p');
+    p.textContent = 'This dish is not in the built-in list yet. Try a different spelling (MM/EN) and we’ll still show nearby places.';
+    body.appendChild(p);
   }
 
-  // Open dialog
-  const dlgTitleEl = document.getElementById('dlgTitle');
-  if (dlgTitleEl) dlgTitleEl.textContent = 'Details';
-  const dlgEl = document.getElementById('dlg');
-  if (dlgEl && typeof dlgEl.showModal==='function') dlgEl.showModal();
+  // 4) open the dialog (and ensure it’s visible)
+  if (typeof dlg.showModal === 'function') {
+    dlg.showModal();
+  } else {
+    // older browsers
+    dlg.setAttribute('open', '');
+  }
 }
 
 // Orchestrator
