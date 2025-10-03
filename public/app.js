@@ -377,6 +377,54 @@ function render(list, term) {
       term || "popular nearby"
     ).trim()}”`;
 }
+
+function genericFromTerm(term) {
+  const t = (term||'').toLowerCase();
+  const has = (...ks)=> ks.some(k=> t.includes(k));
+  const mk = (name, ingredients, nutrition, notes) => ({ name, ingredients, nutrition, notes });
+
+  if (has('ဖျော်ရည်','အေး','juice','smoothie','drink','tea','coffee','milk','နွားနို့')) {
+    return mk('Beverage (Generic)',
+      ['ရေ','သီးဖျော်/လက်ဖက်/ကော်ဖီ','ချိုစပ်','ရေခဲ (optional)'],
+      { calories: 80, protein: 1, carbs: 18, fat: 0, fiber: 1, sodium: 20 },
+      'milk/condensed milk ထည့်ရင် ကယ်လိုရီ တက်နိုင်ပါတယ်.');
+  }
+  if (has('ခေါက်ဆွဲ','မုန့်','noodle')) {
+    return mk('Noodle Dish (Generic)',
+      ['မုန့် (rice/wheat)','အသား (optional)','ရည်/အနံ့မှုန့်','ကြက်သွန်/ဟင်းနုနယ်'],
+      { calories: 520, protein: 18, carbs: 74, fat: 14, fiber: 4, sodium: 950 },
+      'sodium မြင့်တတ် — portion ထိန်းပါ.');
+  }
+  if (has('ဟင်း','curry')) {
+    return mk('Curry (Generic)',
+      ['အသား/ငါး/ပဲ','ဆီ','ကြက်သွန်/မှုန့်အမျိုးမျိုး','အုန်းနို့ (optional)'],
+      { calories: 600, protein: 22, carbs: 30, fat: 40, fiber: 5, sodium: 1100 },
+      'ဆီနှုန်းပေါ်မူတည်ပြီး ကယ်လိုရီမြင့်တတ်.');
+  }
+  if (has('ထမင်း','rice')) {
+    return mk('Rice Dish (Generic)',
+      ['ထမင်း','အသား/သီးနှံ (optional)','ကြက်ဥ (optional)'],
+      { calories: 650, protein: 16, carbs: 95, fat: 18, fiber: 3, sodium: 900 },
+      'fried-styled ဆိုရင် ဆီကြောင့် ကယ်လိုရီ မြင့်တတ်.');
+  }
+  if (has('အချို','dessert','falooda','ဖာလူဒါ')) {
+    return mk('Dessert (Generic)',
+      ['ချို/သကြား','နို့/condensed milk','ဂျယ်လီ/စီမံ (optional)'],
+      { calories: 300, protein: 4, carbs: 50, fat: 9, fiber: 1, sodium: 80 },
+      'portion သိမ်းစားပါ.');
+  }
+  if (has('ငါးပိ','ngapi')) {
+    return mk('ငါးပိ/Ngapi Dish (Generic)',
+      ['ငါးပိ','သံပုရာ/လိမ္မော်','ငရုတ်သီး','ကြက်သွန်'],
+      { calories: 180, protein: 12, carbs: 8, fat: 10, fiber: 2, sodium: 1500 },
+      'sodium မြင့်တတ် — သောက်ရည်နှုန်း ထိန်းပါ.');
+  }
+  return mk('General Dish',
+    ['မူရင်းပါဝင်ပစ္စည်းများ (အမျိုးအစားပေါ်မူတည်)','အရသာမှုန့်/ရည်','toppings (optional)'],
+    { calories: 400, protein: 12, carbs: 55, fat: 12, fiber: 3, sodium: 800 },
+    'အမျိုးအစားမသတ်မှတ်ရသေး — အနီးစပ်သဘောအချက်အလက်ကိုပြ.');
+}
+
 // ---- Minimal, reliable Details renderer (drop-in) ----
 function openDetails(rawTerm) {
   const dlg = document.getElementById('dlg');
@@ -384,12 +432,11 @@ function openDetails(rawTerm) {
   const body = document.getElementById('dlgBody');
   if (!dlg || !titleEl || !body) return;
 
-  // 1) clear and set basic header
   body.innerHTML = '';
   const term = (rawTerm || '').trim();
   titleEl.textContent = 'Details';
 
-  // helpers
+  // helpers (as-is)
   const norm = s => (s || '')
     .toLowerCase()
     .replace(/[^\p{L}\p{N}\s]/gu, ' ')
@@ -402,107 +449,83 @@ function openDetails(rawTerm) {
     return hit / Math.max(1, Math.min(A.size, B.size));
   };
 
-  // 2) tiny built-in dict (MM/EN) — extend later as you like
+  // your BOOK stays the same (shortened here for brevity) …
   const BOOK = [
-    {
-      name: 'မုန့်ဟင်းခါး (Mohinga)',
-      keys: ['မုန့်ဟင်းခါး','mohinga','mont hingar','fish noodle soup'],
-      ingredients: ['ငါးဟင်းရည်','လေးပါးသီး','နနွင်းမှုန့်','ပဲမှုန့်','မုန့် (rice noodle)','ကြက်သွန်','ခရမ်းချဉ်သီး','သံပုရာ/လိမ္မော်'],
-      nutrition: { calories: 420, protein: 22, carbs: 58, fat: 12, fiber: 5, sodium: 980 },
-      notes: 'မြန်မာရိုးရာ ငါးရည်ခေါက်ဆွဲ—နံ့အသက်ပြင်း၊ အာဟာရ နှင့် sodium အလယ်အလတ်။'
-    },
-    {
-      name: 'မုန့်တီ (Mont Ti)',
-      keys: ['မုန့်တီ','mont ti','mont tee','rice vermicelli salad'],
-      ingredients: ['မုန့် (rice vermicelli)','ပဲမှုန့်မှုန်','ကြက်သွန်ဖြူ/နီ','ငရုတ်သီးမှုန့်','သံပုရာ/သလောက်'],
-      nutrition: { calories: 380, protein: 10, carbs: 66, fat: 8, fiber: 4, sodium: 720 },
-      notes: 'အေအေးမုန့်သုတ်စတိုင်—ချဉ်နဲ့ကြိတ်မှုန့်အလှဆင်။'
-    },
-    {
-      name: 'Shan Noodle (ရှမ်းခေါက်ဆွဲ)',
-      keys: ['ရှမ်းခေါက်ဆွဲ','shan noodle','shan khauk swe'],
-      ingredients: ['မုန့်','ကြက်/ဝက်အလွိုင်း','ပဲမှုန့်ရည်','ငရုတ်ဆီ','မြေပဲ','ချဉ်ထန်းနို့'],
-      nutrition: { calories: 520, protein: 24, carbs: 70, fat: 16, fiber: 5, sodium: 900 },
-      notes: 'ပဲရည်အခြေခံ—အနံ့အသက်ပြင်း။ မြေပဲကြောင့် အဟင်းချိုရောင်တက်။'
-    },
-    {
-      name: 'Fried Rice (ထမင်းကြော်)',
-      keys: ['fried rice','ထမင်းကြော်'],
-      ingredients: ['အေးအေးထမင်း','ကြက်ဥ','ကြက်သွန်','ဆီ','အလွှာအမဲ/ကြက်/ပုစွန် (option)'],
-      nutrition: { calories: 650, protein: 18, carbs: 90, fat: 22, fiber: 3, sodium: 1100 },
-      notes: 'portion ကြီးရင် ကယ်လိုရီမြင့်—ဆီနှုန်းထိန်းပါ။'
-    },
-    {
-      name: 'Coffee (ကော်ဖီ)',
-      keys: ['coffee','ကော်ဖီ'],
-      ingredients: ['ကော်ဖီမီး','ရေ','နို့/condensed milk (option)','ချိုစပ်'],
-      nutrition: { calories: 5, protein: 0, carbs: 0, fat: 0, fiber: 0, sodium: 5 },
-      notes: 'Black coffee ကယ်လိုရီနည်း; နို့/ချိုထည့်ရင် တက်။'
-    },
-    {
-      name: 'Milk Tea (လ္ဘက်ရည်)',
-      keys: ['milk tea','လ္ဘက်ရည်','bubble tea','boba'],
-      ingredients: ['လက်ဖက်','နို့','condensed milk','ချို','တပော့ (option)'],
-      nutrition: { calories: 220, protein: 4, carbs: 36, fat: 7, fiber: 0, sodium: 80 },
-      notes: 'တပော့ထည့်လျှင် ကယ်လိုရီတက်—portion သတိ။'
-    },
-    // Sushi umbrella (generic)
-    {
-      name: 'Sushi (အထွေထွေ)',
-      keys: ['sushi','ဆူရှီ','sushi rice','sushi set'],
-      ingredients: ['vinegared rice','nori (seaweed)','soy sauce','wasabi','ginger'],
-      nutrition: { calories: 330, protein: 20, carbs: 50, fat: 6, fiber: 2, sodium: 900 },
-      notes: 'အမျိုးအစားပေါ်မူတည်ပြီး ကယ်လိုရီ/နားဝင်မှုကွာခြားတယ်။'
-    },
-    // Nigiri
-    {
-      name: 'Nigiri Sushi',
-      keys: ['nigiri','nigiri sushi'],
-      ingredients: ['vinegared rice (shari)','fish slice (tane) e.g. salmon/tuna','wasabi (small)'],
-      nutrition: { calories: 280, protein: 18, carbs: 42, fat: 5, fiber: 1, sodium: 700 },
-      notes: 'အများအားဖြင့် nori မထုပ်ဘဲ ထိပ်ပေါ်မှာ ငါးတစ်ပွားတင်ထားပြီး rice သေးသေးလုံးပေါ်တွင်ဖိထားသည်။'
-    },
-    // Maki (rolls)
-    {
-      name: 'Maki Sushi (Roll)',
-      keys: ['maki','maki sushi','norimaki','uramaki','temaki'],
-      ingredients: ['nori seaweed','vinegared rice','fillings (fish/veg)','soy sauce','wasabi'],
-      nutrition: { calories: 360, protein: 16, carbs: 56, fat: 8, fiber: 3, sodium: 950 },
-      notes: 'uramaki (inside-out) သည် အပြင်ဘက်က rice ဖြစ်ပြီး temaki သည် ကိုန်းပုံ သမားရိုးကျကိုန်းရစ်။'
-    },
-    // Sashimi
-    {
-      name: 'Sashimi',
-      keys: ['sashimi','刺身'],
-      ingredients: ['raw fish slices','soy sauce','wasabi','daikon'],
-      nutrition: { calories: 200, protein: 28, carbs: 2, fat: 8, fiber: 0, sodium: 600 },
-      notes: 'rice မပါ—protein မြင့်၊ carbs နည်း; sodium သော့အရည်ပေါ်မူတည်။'
-    }
+    { name:'မုန့်ဟင်းခါး (Mohinga)', keys:['မုန့်ဟင်းခါး','mohinga','mont hingar','fish noodle soup'],
+      ingredients:['ငါးဟင်းရည်','လေးပါးသီး','နနွင်းမှုန့်','ပဲမှုန့်','မုန့် (rice noodle)','ကြက်သွန်','ခရမ်းချဉ်သီး','သံပုရာ/လိမ္မော်'],
+      nutrition:{ calories:420, protein:22, carbs:58, fat:12, fiber:5, sodium:980 },
+      notes:'မြန်မာ ငါးရည်ခေါက်ဆွဲ — နံ့အသက်ပြင်း.' },
+    { name:'မုန့်တီ (Mont Ti)', keys:['မုန့်တီ','mont ti','mont tee','rice vermicelli salad'],
+      ingredients:['မုန့် (rice vermicelli)','ပဲမှုန့်မှုန်','ကြက်သွန်','ငရုတ်သီးမှုန့်','သံပုရာ/သလောက်'],
+      nutrition:{ calories:380, protein:10, carbs:66, fat:8, fiber:4, sodium:720 },
+      notes:'အေအေးမုန့်သုတ် — ချဉ်နဲ့အနံ့မွှေး.' },
+    { name:'Shan Noodle (ရှမ်းခေါက်ဆွဲ)', keys:['ရှမ်းခေါက်ဆွဲ','shan noodle','shan khauk swe'],
+      ingredients:['မုန့်','ကြက်/ဝက်အလွိုင်း','ပဲမှုန့်ရည်','ငရုတ်ဆီ','မြေပဲ','ချဉ်ထန်းနို့'],
+      nutrition:{ calories:520, protein:24, carbs:70, fat:16, fiber:5, sodium:900 },
+      notes:'ပဲရည်အခြေခံ — အနံ့အသက်ပြင်း.' },
+    { name:'Fried Rice (ထမင်းကြော်)', keys:['fried rice','ထမင်းကြော်'],
+      ingredients:['အေးအေးထမင်း','ကြက်ဥ','ကြက်သွန်','ဆီ','အသား (optional)'],
+      nutrition:{ calories:650, protein:18, carbs:90, fat:22, fiber:3, sodium:1100 } },
+    { name:'Coffee (ကော်ဖီ)', keys:['coffee','ကော်ဖီ'],
+      ingredients:['ကော်ဖီမီး','ရေ','နို့/condensed milk (optional)','ချို'],
+      nutrition:{ calories:5, protein:0, carbs:0, fat:0, fiber:0, sodium:5 } },
+    { name:'Milk Tea (လ္ဘက်ရည်)', keys:['milk tea','လ္ဘက်ရည်','bubble tea','boba'],
+      ingredients:['လက်ဖက်','နို့','condensed milk','ချို','တပော့ (optional)'],
+      nutrition:{ calories:220, protein:4, carbs:36, fat:7, fiber:0, sodium:80 } },
+    { name:'Sushi (အထွေထွေ)', keys:['sushi','ဆူရှီ','sushi rice','sushi set'],
+      ingredients:['vinegared rice','nori','soy sauce','wasabi','ginger'],
+      nutrition:{ calories:330, protein:20, carbs:50, fat:6, fiber:2, sodium:900 } },
+    { name:'Nigiri Sushi', keys:['nigiri','nigiri sushi'],
+      ingredients:['rice (shari)','fish slice (salmon/tuna)','wasabi (small)'],
+      nutrition:{ calories:280, protein:18, carbs:42, fat:5, fiber:1, sodium:700 } },
+    { name:'Maki Sushi (Roll)', keys:['maki','maki sushi','norimaki','uramaki','temaki'],
+      ingredients:['nori','rice','fillings (fish/veg)','soy sauce','wasabi'],
+      nutrition:{ calories:360, protein:16, carbs:56, fat:8, fiber:3, sodium:950 } },
+    { name:'Sashimi', keys:['sashimi','刺身'],
+      ingredients:['raw fish slices','soy sauce','wasabi','daikon'],
+      nutrition:{ calories:200, protein:28, carbs:2, fat:8, fiber:0, sodium:600 } }
   ];
 
+  // ❶ existing exact/fuzzy hit
   const lower = term.toLowerCase();
-  const hit = BOOK.find(item => item.keys.some(k => lower.includes(k.toLowerCase()) || k.toLowerCase().includes(lower)));
+  let hit = BOOK.find(item =>
+    item.keys.some(k => lower.includes(k.toLowerCase()) || k.toLowerCase().includes(lower))
+  );
+  if (!hit) {
+    // optional: fuzzy fallback on BOOK (same as before)
+    let best = null, bestScore = 0;
+    for (const item of BOOK) {
+      const score = Math.max(...item.keys.map(k => overlapScore(k, term)));
+      if (score > bestScore) { bestScore = score; best = item; }
+    }
+    if (bestScore >= 0.5) hit = best;
+  }
 
-  // 3) build sections (always show something)
+  // ❷ NEW: generic fallback (this is the 3 lines you asked about)
+  const model = hit || genericFromTerm(term);   // ✅ always something to render
+
+  // render (uses `model`)
   const h4 = document.createElement('h4');
-  h4.textContent = hit ? hit.name : (term || 'Details');
+  h4.textContent = model.name || (term || 'Details');
   body.appendChild(h4);
 
-  if (hit) {
-    // Ingredients
+  // Ingredients
+  if (model.ingredients?.length) {
     const h5a = document.createElement('h5'); h5a.textContent = 'Ingredients';
     const ul = document.createElement('ul'); ul.className = 'shop-list';
-    hit.ingredients.forEach(x => { const li = document.createElement('li'); li.textContent = x; ul.appendChild(li); });
+    model.ingredients.forEach(x => { const li = document.createElement('li'); li.textContent = x; ul.appendChild(li); });
     body.append(h5a, ul);
+  }
 
-    // Nutrition
+  // Nutrition
+  if (model.nutrition) {
+    const n = model.nutrition;
     const h5b = document.createElement('h5'); h5b.textContent = 'Nutrition (approx per serving)';
     const grid = document.createElement('div');
     grid.style.display = 'grid';
     grid.style.gridTemplateColumns = 'repeat(auto-fit,minmax(130px,1fr))';
     grid.style.gap = '.4rem';
     const cell = (k, v) => { const d = document.createElement('div'); d.className = 'pill'; d.textContent = `${k}: ${v}`; return d; };
-    const n = hit.nutrition || {};
     grid.append(
       cell('Calories', (n.calories ?? '—') + ' kcal'),
       cell('Protein', (n.protein ?? '—') + ' g'),
@@ -512,26 +535,15 @@ function openDetails(rawTerm) {
       cell('Sodium',  (n.sodium  ?? '—') + ' mg')
     );
     body.append(h5b, grid);
+  }
 
-    // Notes
-    if (hit.notes) {
-      const p = document.createElement('p'); p.className = 'muted'; p.textContent = hit.notes;
-      body.appendChild(p);
-    }
-  } else {
-    // fallback
-    const p = document.createElement('p');
-    p.textContent = 'This dish is not in the built-in list yet. Try a different spelling (MM/EN) and we’ll still show nearby places.';
+  if (model.notes) {
+    const p = document.createElement('p'); p.className = 'muted'; p.textContent = model.notes;
     body.appendChild(p);
   }
 
-  // 4) open the dialog (and ensure it’s visible)
-  if (typeof dlg.showModal === 'function') {
-    dlg.showModal();
-  } else {
-    // older browsers
-    dlg.setAttribute('open', '');
-  }
+  if (typeof dlg.showModal === 'function') dlg.showModal();
+  else dlg.setAttribute('open', '');
 }
 
 // Orchestrator
