@@ -51,7 +51,7 @@ function tryLocate(){
 
 // ===================== Autocomplete =====================
 const acList = $('#acList');
-const input = $('#dish');
+// const input = $('#dish');
 let acIndex = -1;
 
 function makeSuggestions(query){
@@ -256,3 +256,29 @@ async function openDetails(rawTerm){
   document.getElementById('dlgTitle').textContent = 'Details';
   document.getElementById('dlg').showModal();
 }
+
+const btnToggle = document.getElementById('btnToggleSearch');
+const searchRow = document.querySelector('.search-row');
+const input = document.getElementById('dish');
+const btnSearch = document.getElementById('btnSearch');
+
+function doSearch() {
+  const val = input.value.trim();
+  if (!val) return;
+  search(); // reuse existing search() function
+  if (window.innerWidth <= 768) searchRow.classList.add('hidden');
+}
+
+btnToggle.addEventListener('click', () => {
+  searchRow.classList.toggle('hidden');
+  if (!searchRow.classList.contains('hidden')) {
+    input.focus();
+  }
+});
+
+btnSearch.addEventListener('click', doSearch);
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    doSearch();
+  }
+});

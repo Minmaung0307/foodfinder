@@ -11,15 +11,16 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="logo">🍽️</span><h1>FoodExplorer</h1></div>
-    <div class="search-row" style="width:45%">
-      <div class="ac">
-        <input id="dish" type="search" placeholder="ဘာမဆို ရိုက်ရှာပါ — မုန့်ဟင်းခါး, မုန့်တီ, ကော်ဖီ, လ်ဘက်ရည်, chicken noodle, korean noodle…" autocomplete="off" />
-        <ul id="acList" class="ac-list" hidden></ul>
-      </div>
-      <button id="btnSearch" class="btn">Search</button>
+  <div class="brand"><span class="logo">🍽️</span><h1>World Food Explorer</h1></div>
+  
+  <div class="search-wrap">
+    <button id="btnToggleSearch" class="icon-btn search-icon" aria-label="Search">🔍</button>
+    <div class="search-row hidden">
+      <input id="dish" type="search" placeholder="Search food, drink..." autocomplete="off" />
+      <button id="btnSearch" class="icon-btn go" aria-label="Go">🔍</button>
     </div>
-  </header>
+  </div>
+</header>
 
   <main>
     <aside class="panel">

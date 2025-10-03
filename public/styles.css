@@ -47,17 +47,29 @@ body {
   font-size: 1.1rem;
   font-weight: 800;
 }
+.search-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+/* Hidden by default on mobile */
 .search-row {
   display: flex;
   align-items: center;
   gap: .5rem;
-  width: 75%;          /* ခပ်ရှည်ရှည်လုပ်လိုက်တယ် */
-  max-width: 1200px;   /* Desktop မှာမိုက်မိုက်ရအောင် တိုးထား */
-  background: linear-gradient(135deg, #1a2334, #121827);
+  background: #11131a;
   border: 1px solid var(--border);
   border-radius: 2rem;
   padding: .25rem .5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  width: 75%;
+  max-width: 1200px;
+  transition: all .3s ease;
+}
+
+.search-row.hidden {
+  display: none;
 }
 
 .search-row input {
@@ -68,28 +80,37 @@ body {
   padding: .6rem 1rem;
   font-size: 1rem;
   color: var(--text);
-  border-radius: 2rem 0 0 2rem;
 }
 
 .search-row input::placeholder {
   color: var(--muted);
-  font-style: italic;
 }
 
-.search-row .btn {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+.icon-btn {
+  background: transparent;
   border: none;
-  color: #111;
-  font-weight: 600;
-  padding: .6rem 1.2rem;
-  border-radius: 2rem;
+  color: var(--text);
+  font-size: 1.3rem;
   cursor: pointer;
-  transition: transform .15s ease, box-shadow .15s ease;
+  padding: .4rem .6rem;
+  border-radius: 50%;
+  transition: background .2s;
+}
+.icon-btn:hover {
+  background: rgba(255,255,255,0.1);
 }
 
-.search-row .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(0,0,0,.5);
+/* Mobile first: show only icon */
+@media (max-width: 768px) {
+  .search-row {
+    position: absolute;
+    top: 60px;
+    right: 1rem;
+    left: 1rem;
+    width: auto;
+    background: #151823;
+    z-index: 20;
+  }
 }
 .ac {
   position: relative;
