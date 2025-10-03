@@ -254,7 +254,7 @@ body {
 .badge {
   font-size: 0.8rem;
   color: #111;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  /* background: linear-gradient(135deg, var(--accent), var(--accent2)); */
   padding: 0.15rem 0.5rem;
   border-radius: 0.5rem;
 }
