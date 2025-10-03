@@ -389,6 +389,19 @@ function openDetails(rawTerm) {
   const term = (rawTerm || '').trim();
   titleEl.textContent = 'Details';
 
+  // helpers
+  const norm = s => (s || '')
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const tokens = s => norm(s).split(' ').filter(Boolean);
+  const overlapScore = (a, b) => {
+    const A = new Set(tokens(a)), B = new Set(tokens(b));
+    let hit = 0; A.forEach(t => { if (B.has(t)) hit++; });
+    return hit / Math.max(1, Math.min(A.size, B.size));
+  };
+  
   // 2) tiny built-in dict (MM/EN) — extend later as you like
   const BOOK = [
     {
@@ -432,6 +445,38 @@ function openDetails(rawTerm) {
       ingredients: ['လက်ဖက်','နို့','condensed milk','ချို','တပော့ (option)'],
       nutrition: { calories: 220, protein: 4, carbs: 36, fat: 7, fiber: 0, sodium: 80 },
       notes: 'တပော့ထည့်လျှင် ကယ်လိုရီတက်—portion သတိ။'
+    },
+    // Sushi umbrella (generic)
+    {
+      name: 'Sushi (အထွေထွေ)',
+      keys: ['sushi','ဆူရှီ','sushi rice','sushi set'],
+      ingredients: ['vinegared rice','nori (seaweed)','soy sauce','wasabi','ginger'],
+      nutrition: { calories: 330, protein: 20, carbs: 50, fat: 6, fiber: 2, sodium: 900 },
+      notes: 'အမျိုးအစားပေါ်မူတည်ပြီး ကယ်လိုရီ/နားဝင်မှုကွာခြားတယ်။'
+    },
+    // Nigiri
+    {
+      name: 'Nigiri Sushi',
+      keys: ['nigiri','nigiri sushi'],
+      ingredients: ['vinegared rice (shari)','fish slice (tane) e.g. salmon/tuna','wasabi (small)'],
+      nutrition: { calories: 280, protein: 18, carbs: 42, fat: 5, fiber: 1, sodium: 700 },
+      notes: 'အများအားဖြင့် nori မထုပ်ဘဲ ထိပ်ပေါ်မှာ ငါးတစ်ပွားတင်ထားပြီး rice သေးသေးလုံးပေါ်တွင်ဖိထားသည်။'
+    },
+    // Maki (rolls)
+    {
+      name: 'Maki Sushi (Roll)',
+      keys: ['maki','maki sushi','norimaki','uramaki','temaki'],
+      ingredients: ['nori seaweed','vinegared rice','fillings (fish/veg)','soy sauce','wasabi'],
+      nutrition: { calories: 360, protein: 16, carbs: 56, fat: 8, fiber: 3, sodium: 950 },
+      notes: 'uramaki (inside-out) သည် အပြင်ဘက်က rice ဖြစ်ပြီး temaki သည် ကိုန်းပုံ သမားရိုးကျကိုန်းရစ်။'
+    },
+    // Sashimi
+    {
+      name: 'Sashimi',
+      keys: ['sashimi','刺身'],
+      ingredients: ['raw fish slices','soy sauce','wasabi','daikon'],
+      nutrition: { calories: 200, protein: 28, carbs: 2, fat: 8, fiber: 0, sodium: 600 },
+      notes: 'rice မပါ—protein မြင့်၊ carbs နည်း; sodium သော့အရည်ပေါ်မူတည်။'
     }
   ];
 
