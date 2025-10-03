@@ -194,6 +194,24 @@ body {
   background: #162037;
 }
 
+/* make the input fill the whole search row (minus the icon button) */
+.search-row .ac {
+  position: relative;
+  flex: 1 1 auto;   /* <-- grow to take remaining space */
+  min-width: 0;     /* <-- allow input to expand properly inside flex */
+}
+
+.search-row .ac input#dish {
+  width: 100%;      /* <-- fill .ac fully */
+  display: block;
+}
+
+/* (optional) tame the default search styling on Safari/Chrome */
+.search-row input[type="search"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 /* Content */
 .content-only {
   padding: 1rem clamp(1rem, 4vw, 2rem);
