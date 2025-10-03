@@ -282,3 +282,33 @@ input.addEventListener('keydown', (e) => {
     doSearch();
   }
 });
+
+// Toggle SearchBar (mobile first)
+document.addEventListener("DOMContentLoaded", () => {
+  const btnToggle = document.getElementById('btnToggleSearch');
+  const searchRow = document.querySelector('.search-row');
+  const input = document.getElementById('dish');
+  const btnSearch = document.getElementById('btnSearch');
+
+  function doSearch() {
+    const val = input.value.trim();
+    if (!val) return;
+    search(); // သင့်ရဲ့ ရှိပြီးသား search() function ကိုခေါ်
+    if (window.innerWidth <= 768) searchRow.classList.add('hidden');
+  }
+
+  btnToggle.addEventListener('click', () => {
+    searchRow.classList.toggle('hidden');
+    if (!searchRow.classList.contains('hidden')) {
+      input.focus();
+    }
+  });
+
+  btnSearch.addEventListener('click', doSearch);
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      doSearch();
+    }
+  });
+});
