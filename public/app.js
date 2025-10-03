@@ -293,10 +293,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function doSearch() {
     const val = input.value.trim();
     if (!val) return;
-    search(); // သင့်ရဲ့ ရှိပြီးသား search() function ကိုခေါ်
+    search(); // သင့်ရဲ့ရှိပြီးသား search() function ကိုခေါ်
     if (window.innerWidth <= 768) searchRow.classList.add('hidden');
   }
 
+  // Toggle icon click → show/hide bar
   btnToggle.addEventListener('click', () => {
     searchRow.classList.toggle('hidden');
     if (!searchRow.classList.contains('hidden')) {
@@ -304,8 +305,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Click icon inside search bar
   btnSearch.addEventListener('click', doSearch);
 
+  // Press Enter key
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       doSearch();
