@@ -214,6 +214,109 @@ function getPlaceDetails(placeId) {
   });
 }
 
+// ====== DISH KNOWLEDGE: Ingredients + Nutrition (approx) ======
+const RECIPES = [
+  {
+    keys: ['မုန့်ဟင်းခါး','mohinga','mont hingar','fish noodle soup'],
+    display: 'မုန့်ဟင်းခါး (Mohinga)',
+    ingredients: ['ငါးဟင်းရည်','လေးပါးသီး','နနွင်းမှုန့်','ပဲမှုန့်','အာလူး (optional)','လျှပ်','မုန့် (rice noodle)','ချဉ်ထန်းနို့','အကြော်သီးရွက်','ပဲမျို','ဓါတ်ငွေ့မြစ်အမြစ်'],
+    nutrition: { calories: 420, protein_g: 22, carbs_g: 58, fat_g: 12, fiber_g: 5, sodium_mg: 980 },
+    allergens: ['ငါး','ဂေလက်တင် (အကြော်တွင်)'],
+    notes: 'မြန်မာရိုးရာ ငါးရည်ခေါက်ဆွဲ။ အရသာချိုဆားပေါင်းစပ်၊ နံနင်းမှုန့်နဲ့ အရောင်မွှေးကြိုင်။'
+  },
+  {
+    keys: ['မုန့်တီ','mont ti','mont tee','rice vermicelli salad'],
+    display: 'မုန့်တီ (Mont Ti)',
+    ingredients: ['မုန့် (rice vermicelli)','ကြက်သွန်ဖြူ/နီ','ပဲမှုန့်မှုန်','ငရုတ်သီးမှုန့်','သံပုရာချဉ်/လိမ္မော်'],
+    nutrition: { calories: 380, protein_g: 10, carbs_g: 66, fat_g: 8, fiber_g: 4, sodium_mg: 720 },
+    allergens: ['ပဲ'],
+    notes: 'ခန့်ချိုးပြီး သံပုရာ/သလောက်ချဉ်နဲ့ လက်ဖက်ရည်ဆိုင်တွေမှာ တွေ့ရတဲ့ အအေးခန်းကောင်းစား။'
+  },
+  {
+    keys: ['ရှမ်းခေါက်ဆွဲ','shan noodle','shan khauk swe'],
+    display: 'ရှမ်းခေါက်ဆွဲ (Shan Noodle)',
+    ingredients: ['မုန့်','ကြက်/ဝက်အလွိုင်း','ပဲမှုန့်','ကြက်သွန်နီငရုတ်ဆီ','မြေပဲမျိုး','ချဉ်ထန်းနို့'],
+    nutrition: { calories: 520, protein_g: 24, carbs_g: 70, fat_g: 16, fiber_g: 5, sodium_mg: 900 },
+    allergens: ['ပဲ','မြေပဲ'],
+    notes: 'ပဲမှုန့်ရည်ခန့်ချော် အနံ့အသက်ပြင်းခိုင်၊ မြေပဲမျိုးအနည်းငယ်ဖြင့် ဆာလောင်တင်းရင်း။'
+  },
+  {
+    keys: ['fried rice','ထမင်းကြော်'],
+    display: 'ထမင်းကြော် (Fried Rice)',
+    ingredients: ['အေးအေးထမင်း','ကြက်ဥ','ကြက်သွန်','ဆီ','ဆီချက်မှုန့်','ငရုတ်သီး','အမဲ/ကြက်/ပုစွန် (optional)'],
+    nutrition: { calories: 650, protein_g: 18, carbs_g: 90, fat_g: 22, fiber_g: 3, sodium_mg: 1100 },
+    allergens: ['ဥ'],
+    notes: 'ထမင်းအေးကိုကြော်ဖက် တစ်ပွဲအဖြစ် စားလို့ပြည့်ဝသွားတတ်။'
+  },
+  {
+    keys: ['coffee','ကော်ဖီ','coffe'],
+    display: 'Coffee',
+    ingredients: ['ကော်ဖီမီွး','ရေ','နို့/condensed milk (optional)','အချို'],
+    nutrition: { calories: 5, protein_g: 0, carbs_g: 0, fat_g: 0, fiber_g: 0, sodium_mg: 5 },
+    allergens: [],
+    notes: 'Black coffee = calories နည်း။ နို့/ချိုစပ်ရင် ကယ်လိုရီတက်တယ်။'
+  },
+  {
+    keys: ['milk tea','လ္ဘက်ရည်','milk-tea','bubble tea','boba'],
+    display: 'Milk Tea',
+    ingredients: ['လက်ဖက်','နို့','ဆန်ခွောက်/condensed milk','ချိုစပ်','တပော့ (optional)'],
+    nutrition: { calories: 220, protein_g: 4, carbs_g: 36, fat_g: 7, fiber_g: 0, sodium_mg: 80 },
+    allergens: ['နို့'],
+    notes: 'တပော့ ထည့်ရင် ကယ်လိုရီ/စုတင် ဆင်ခြည်တက်နိုင်။'
+  },
+  {
+    keys: ['chicken noodle','ကြက်ခေါက်ဆွဲ'],
+    display: 'Chicken Noodle',
+    ingredients: ['မုန့်','ကြက်သား','ပြောင်းလက်','ကြက်သွန်','ငရုတ်ကောင်း','အူမ','ရည်'],
+    nutrition: { calories: 560, protein_g: 30, carbs_g: 68, fat_g: 16, fiber_g: 3, sodium_mg: 950 },
+    allergens: [],
+    notes: 'အသင့်စားရည်နှင့် အနံ့အသက်နူးညံ့ပေါ့ပါး။'
+  },
+  {
+    keys: ['korean noodle','ramyeon','ramen (korean)'],
+    display: 'Korean Noodle (Ramyeon)',
+    ingredients: ['ဆားမွှေးမုန့်ခေါက်ဆွဲ','အရောင်အသားမှုန့်','ငရုတ်သီးမှုန့်','အမဲ/ကြက်အသားခြောက် (optional)'],
+    nutrition: { calories: 480, protein_g: 10, carbs_g: 72, fat_g: 16, fiber_g: 3, sodium_mg: 1600 },
+    allergens: ['ဂလူတင် (ဂျုံ)'],
+    notes: 'အရသာကြီး (sodium မြင့်) — ဆားနည်းထဲသောက်အပ်။'
+  },
+  {
+    keys: ['sushi'],
+    display: 'Sushi',
+    ingredients: ['အလင်ခေါက် (vinegared rice)','ငါးစမ်း','ညက်ကူ','soy sauce','ဝါသာဘီ'],
+    nutrition: { calories: 330, protein_g: 20, carbs_g: 50, fat_g: 6, fiber_g: 2, sodium_mg: 900 },
+    allergens: ['ငါး','soy'],
+    notes: 'အမျိုးအစားပေါ်မူတည်ပြီး ကယ်လိုရီကွာခြား။'
+  },
+  {
+    keys: ['tea leaf salad','လက်ဖက်သုပ်','laphet thoke'],
+    display: 'လက်ဖက်သုပ် (Tea Leaf Salad)',
+    ingredients: ['လက်ဖက်','မြေပဲ','သေတ္တာပဲ','သံပုရာ','ဆား/သကြား','သကြားသောက်','ပဲသီးအကာ'],
+    nutrition: { calories: 420, protein_g: 12, carbs_g: 28, fat_g: 28, fiber_g: 7, sodium_mg: 720 },
+    allergens: ['မြေပဲ','ပဲ'],
+    notes: 'အမေ့ကောင်းသော အချိုရစ်-ချဉ်သိမ်သိမ်၊ ဆီပါဝင်မှု မြင့်တတ်။'
+  }
+];
+
+// fuzzy find by Burmese/English
+function findRecipe(term) {
+  const s = (term||'').toLowerCase();
+  if (!s) return null;
+  // exact or includes
+  let best = null;
+  for (const r of RECIPES) {
+    for (const k of r.keys) {
+      const key = k.toLowerCase();
+      if (key === s || key.includes(s) || s.includes(key)) {
+        return r;
+      }
+    }
+    // keep startsWith as secondary
+    if (!best && r.keys.some(k => k.toLowerCase().startsWith(s))) best = r;
+  }
+  return best;
+}
+
 // Filters & render
 function applyFiltersAndRender(term) {
   const flags = new Set($$(".f:checked").map((x) => x.value));
@@ -274,21 +377,72 @@ function render(list, term) {
       term || "popular nearby"
     ).trim()}”`;
 }
-function openDetails(rawTerm) {
-  const body = $("#dlgBody");
-  if (!body) return;
-  body.innerHTML = "";
-  const head = el("div", "recipe-head");
-  const title = el("h4");
-  title.textContent = rawTerm || "Details";
-  const meta = el("div", "recipe-meta");
-  meta.append(chip("Free-text search"), chip("Nearby places"));
+function openDetails(rawTerm){
+  const body=$('#dlgBody'); if(!body) return; body.innerHTML='';
+
+  const term = (rawTerm||'').trim();
+  const r = findRecipe(term);
+
+  // Header
+  const head=el('div','recipe-head');
+  const title=el('h4'); title.textContent = r?.display || (term || 'Details');
+  const meta=el('div','recipe-meta');
+  meta.append(chip('Ingredients'), chip('Nutrition Facts'));
   head.append(title, meta);
   body.append(head);
-  const dlgTitleEl = document.getElementById("dlgTitle");
-  if (dlgTitleEl) dlgTitleEl.textContent = "Details";
-  const dlgEl = document.getElementById("dlg");
-  if (dlgEl && typeof dlgEl.showModal === "function") dlgEl.showModal();
+
+  if (r) {
+    // Ingredients
+    const ingWrap = el('div');
+    const h = el('h5'); h.textContent = 'Ingredients';
+    const ul = el('ul','shop-list');
+    r.ingredients.forEach(i=> {
+      const li = document.createElement('li'); li.textContent = i; ul.appendChild(li);
+    });
+    ingWrap.append(h, ul);
+    body.append(ingWrap);
+
+    // Nutrition Facts
+    const n = r.nutrition || {};
+    const nf = el('div');
+    const h2 = el('h5'); h2.textContent = 'Nutrition (approx per serving)';
+    const grid = el('div'); grid.style.display='grid'; grid.style.gridTemplateColumns='repeat(auto-fit,minmax(130px,1fr))'; grid.style.gap='.4rem';
+    const cell = (label,val)=>{ const d=el('div'); d.className='pill'; d.textContent=`${label}: ${val}`; return d; };
+    grid.append(
+      cell('Calories', `${n.calories||'—'} kcal`),
+      cell('Protein', `${n.protein_g||'—'} g`),
+      cell('Carbs', `${n.carbs_g||'—'} g`),
+      cell('Fat', `${n.fat_g||'—'} g`),
+      cell('Fiber', `${n.fiber_g||'—'} g`),
+      cell('Sodium', `${n.sodium_mg||'—'} mg`)
+    );
+    nf.append(h2, grid);
+    body.append(nf);
+
+    // Allergens & Notes
+    if (r.allergens?.length || r.notes) {
+      const more = el('div');
+      if (r.allergens?.length) {
+        const a = el('p'); a.innerHTML = `<strong>Allergens:</strong> ${r.allergens.join(', ')}`;
+        more.append(a);
+      }
+      if (r.notes) {
+        const t = el('p'); t.className='muted'; t.textContent = r.notes;
+        more.append(t);
+      }
+      body.append(more);
+    }
+  } else {
+    // Fallback when we don't have a recipe
+    const p = el('p'); p.textContent = 'This dish is not in the built-in list yet. Showing nearby places with ratings, prices, and photos. You can also try a different spelling (MM/EN).';
+    body.append(p);
+  }
+
+  // Open dialog
+  const dlgTitleEl = document.getElementById('dlgTitle');
+  if (dlgTitleEl) dlgTitleEl.textContent = 'Details';
+  const dlgEl = document.getElementById('dlg');
+  if (dlgEl && typeof dlgEl.showModal==='function') dlgEl.showModal();
 }
 
 // Orchestrator
