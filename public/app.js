@@ -237,59 +237,37 @@ if (dlgEl && typeof dlgEl.showModal === 'function') dlgEl.showModal();
 }
 
 // ===================== UI BINDINGS (MOBILE-FIRST) =====================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   const btnToggle = document.getElementById('btnToggleSearch');
   const searchRow = document.querySelector('.search-row');
   const input = document.getElementById('dish');
   const btnSearch = document.getElementById('btnSearch');
-  const acList = document.getElementById('acList');
 
-  // Guards
-  if (!btnToggle || !searchRow || !input || !btnSearch || !acList) {
-    console.warn('Search UI elements not found. Check IDs: btnToggleSearch, .search-row, dish, btnSearch, acList');
-    return;
-  }
+  if (!btnToggle || !searchRow || !input || !btnSearch) return;
 
-  // Toggle search bar (mobile)
+  // Toggle search bar when icon click
   btnToggle.addEventListener('click', () => {
     searchRow.classList.toggle('hidden');
     if (!searchRow.classList.contains('hidden')) input.focus();
   });
 
-  // Search actions
+  // Search action
   function doSearch() {
     const val = input.value.trim();
     if (!val) return;
-    search();
+    if (typeof window.search === 'function') {
+      window.search(); // reuse existing search()
+    } else {
+      console.log("Searching for:", val);
+    }
     if (window.innerWidth <= 768) searchRow.classList.add('hidden');
   }
+
+  // Icon inside search bar click
   btnSearch.addEventListener('click', doSearch);
-  input.addEventListener('keydown', (e)=>{ if (e.key==='Enter') doSearch(); });
 
-  // Autocomplete
-  let acIndex = -1;
-  function renderAC(items){
-    acList.innerHTML='';
-    if (!items.length){ acList.hidden = true; return; }
-    items.forEach((txt,i)=>{
-      const li = document.createElement('li');
-      li.role='option'; li.textContent = txt;
-      if (i===acIndex) li.setAttribute('aria-selected','true');
-      li.addEventListener('mousedown', e=>{ e.preventDefault(); input.value = txt; acList.hidden=true; });
-      li.addEventListener('click', ()=>{ input.value = txt; acList.hidden=true; doSearch(); });
-      acList.appendChild(li);
-    });
-    acList.hidden = false;
-  }
-
-  input.addEventListener('input', ()=>{ acIndex = -1; renderAC(makeSuggestions(input.value)); });
-  input.addEventListener('keydown', (e)=>{
-    const items = [...acList.querySelectorAll('li')];
-    if (e.key==='ArrowDown'){ e.preventDefault(); acIndex = Math.min(items.length-1, acIndex+1); renderAC(items.map(it=>it.textContent)); }
-    else if (e.key==='ArrowUp'){ e.preventDefault(); acIndex = Math.max(0, acIndex-1); renderAC(items.map(it=>it.textContent)); }
-    else if (e.key==='Enter'){
-      if (!acList.hidden && acIndex>=0){ e.preventDefault(); input.value = items[acIndex].textContent; acList.hidden=true; doSearch(); }
-    } else if (e.key==='Escape'){ acList.hidden=true; }
+  // Enter key submit
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doSearch();
   });
-  document.addEventListener('click', (e)=>{ if (!e.target.closest('.ac')) acList.hidden = true; });
 });

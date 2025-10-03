@@ -12,14 +12,18 @@
 <body>
   <header class="topbar">
   <div class="brand"><span class="logo">🍽️</span><h1>World Food Explorer</h1></div>
-  
+
   <div class="search-wrap">
-  <button id="btnToggleSearch" class="icon-btn search-icon" aria-label="Search">🔍</button>
-  <div class="search-row hidden">
-    <input id="dish" type="search" placeholder="Search food, drink..." autocomplete="off" />
-    <button id="btnSearch" class="icon-btn go" aria-label="Go">🔍</button>
+    <!-- Mobile: search icon -->
+    <button id="btnToggleSearch" class="icon-btn search-icon" aria-label="Search">🔍</button>
+
+    <!-- Search row (hidden on mobile, shown when icon click) -->
+    <div class="search-row hidden">
+      <input id="dish" type="search" placeholder="Search food, drink..." autocomplete="off" />
+      <!-- icon inside as search button -->
+      <button id="btnSearch" class="icon-btn search-go" aria-label="Go">🔍</button>
+    </div>
   </div>
-</div>
 </header>
 
   <main>
