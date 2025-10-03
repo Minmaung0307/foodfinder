@@ -229,8 +229,11 @@ async function openDetails(rawTerm){
       const more = document.createElement('p'); more.className='muted'; more.textContent = `Est. calories: ${Math.round(data.calories||0)} kcal (Edamam approx)`; body.append(more);
     }catch(e){}
   }
-  $('#dlgTitle')?.textContent = 'Details';
-  $('#dlg')?.showModal();
+  const dlgTitleEl = document.getElementById('dlgTitle');
+if (dlgTitleEl) dlgTitleEl.textContent = 'Details';
+
+const dlgEl = document.getElementById('dlg');
+if (dlgEl && typeof dlgEl.showModal === 'function') dlgEl.showModal();
 }
 
 // ===================== UI BINDINGS (MOBILE-FIRST) =====================
