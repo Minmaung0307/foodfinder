@@ -51,8 +51,8 @@ body {
   display: flex;
   align-items: center;
   gap: .5rem;
-  width: 45%;
-  max-width: 980px;
+  width: 75%;          /* ခပ်ရှည်ရှည်လုပ်လိုက်တယ် */
+  max-width: 1200px;   /* Desktop မှာမိုက်မိုက်ရအောင် တိုးထား */
   background: linear-gradient(135deg, #1a2334, #121827);
   border: 1px solid var(--border);
   border-radius: 2rem;
@@ -69,7 +69,6 @@ body {
   font-size: 1rem;
   color: var(--text);
   border-radius: 2rem 0 0 2rem;
-  width: 65%;
 }
 
 .search-row input::placeholder {
