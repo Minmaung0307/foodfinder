@@ -1,0 +1,74 @@
+{
+  "aliases": {
+    "4474274": [
+      "OBX",
+      "Outer Banks",
+      "KDH",
+      "Kill Devil Hill"
+    ],
+    "4474505": [
+      "OBX",
+      "Outer Banks",
+      "Kittyhawk"
+    ],
+    "4481427": [
+      "OBX",
+      "Outer Banks"
+    ],
+    "4492732": [
+      "OBX",
+      "Outer Banks"
+    ],
+    "4477893": [
+      "OBX",
+      "Outer Banks"
+    ],
+    "4458391": [
+      "OBX",
+      "Outer Banks"
+    ],
+    "4483142": [
+      "OBX",
+      "Outer Banks"
+    ],
+    "4453244": [
+      "OBX",
+      "Outer Banks"
+    ],
+    "4470225": [
+      "OBX",
+      "Outer Banks"
+    ]
+  },
+  "areas": [
+    {
+      "id": "area-obx",
+      "name": "Outer Banks",
+      "ascii": "Outer Banks",
+      "country": "US",
+      "region": "North Carolina",
+      "stateCode": "NC",
+      "lat": 36.03072,
+      "lon": -75.67601,
+      "population": 0,
+      "aliases": "OBX",
+      "kind": "area",
+      "members": [
+        "4474274",
+        "4474505",
+        "4481427",
+        "4492732",
+        "4477893",
+        "4458391",
+        "4483142",
+        "4453244",
+        "4470225"
+      ]
+    }
+  ],
+  "preferredAliases": {
+    "kdh": "4474274",
+    "obx": "area-obx",
+    "kittyhawk": "4474505"
+  }
+}

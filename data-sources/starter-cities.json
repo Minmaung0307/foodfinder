@@ -1,0 +1,156 @@
+[
+  {
+    "id": "kitty-hawk",
+    "geonamesId": "4474505",
+    "name": "Kitty Hawk",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 36.06461,
+    "lon": -75.70573
+  },
+  {
+    "id": "nags-head",
+    "geonamesId": "4481427",
+    "name": "Nags Head",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.95739,
+    "lon": -75.62406
+  },
+  {
+    "id": "manteo",
+    "geonamesId": "4477893",
+    "name": "Manteo",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.90823,
+    "lon": -75.67573
+  },
+  {
+    "id": "buxton",
+    "geonamesId": "4458391",
+    "name": "Buxton",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.26768,
+    "lon": -75.54237
+  },
+  {
+    "id": "hatteras",
+    "geonamesId": "4470225",
+    "name": "Hatteras",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.21934,
+    "lon": -75.69016
+  },
+  {
+    "id": "southern-shores",
+    "geonamesId": "4492732",
+    "name": "Southern Shores",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 36.13905,
+    "lon": -75.73157
+  },
+  {
+    "id": "ocracoke",
+    "geonamesId": "4483142",
+    "name": "Ocracoke",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.11462,
+    "lon": -75.98101
+  },
+  {
+    "id": "avon",
+    "geonamesId": "4453244",
+    "name": "Avon",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.35212,
+    "lon": -75.51043
+  },
+  {
+    "id": "kill-devil-hills",
+    "geonamesId": "4474274",
+    "name": "Kill Devil Hills",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 36.03072,
+    "lon": -75.67601
+  },
+  {
+    "id": "yangon",
+    "name": "Yangon",
+    "country": "MM",
+    "lat": 16.779,
+    "lon": 96.158,
+    "count": 140
+  },
+  {
+    "id": "singapore",
+    "name": "Singapore",
+    "country": "SG",
+    "lat": 1.289,
+    "lon": 103.851,
+    "count": 140
+  },
+  {
+    "id": "sydney",
+    "name": "Sydney",
+    "country": "AU",
+    "lat": -33.87,
+    "lon": 151.207,
+    "count": 140
+  },
+  {
+    "id": "bangkok",
+    "name": "Bangkok",
+    "country": "TH",
+    "lat": 13.746,
+    "lon": 100.534,
+    "count": 100
+  },
+  {
+    "id": "tokyo",
+    "name": "Tokyo",
+    "country": "JP",
+    "lat": 35.661,
+    "lon": 139.702,
+    "count": 100
+  },
+  {
+    "id": "mandalay",
+    "name": "Mandalay",
+    "country": "MM",
+    "lat": 21.975,
+    "lon": 96.084,
+    "count": 48
+  },
+  {
+    "id": "london",
+    "name": "London",
+    "country": "GB",
+    "lat": 51.512,
+    "lon": -0.127,
+    "count": 1187
+  },
+  {
+    "id": "new-york",
+    "name": "New York City",
+    "country": "US",
+    "lat": 40.73,
+    "lon": -73.995,
+    "count": 798
+  }
+]

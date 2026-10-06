@@ -1,0 +1,92 @@
+[
+  {
+    "id": "kitty-hawk",
+    "geonamesId": "4474505",
+    "name": "Kitty Hawk",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 36.06461,
+    "lon": -75.70573
+  },
+  {
+    "id": "nags-head",
+    "geonamesId": "4481427",
+    "name": "Nags Head",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.95739,
+    "lon": -75.62406
+  },
+  {
+    "id": "manteo",
+    "geonamesId": "4477893",
+    "name": "Manteo",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.90823,
+    "lon": -75.67573
+  },
+  {
+    "id": "buxton",
+    "geonamesId": "4458391",
+    "name": "Buxton",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.26768,
+    "lon": -75.54237
+  },
+  {
+    "id": "hatteras",
+    "geonamesId": "4470225",
+    "name": "Hatteras",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.21934,
+    "lon": -75.69016
+  },
+  {
+    "id": "southern-shores",
+    "geonamesId": "4492732",
+    "name": "Southern Shores",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 36.13905,
+    "lon": -75.73157
+  },
+  {
+    "id": "ocracoke",
+    "geonamesId": "4483142",
+    "name": "Ocracoke",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.11462,
+    "lon": -75.98101
+  },
+  {
+    "id": "avon",
+    "geonamesId": "4453244",
+    "name": "Avon",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 35.35212,
+    "lon": -75.51043
+  },
+  {
+    "id": "kill-devil-hills",
+    "geonamesId": "4474274",
+    "name": "Kill Devil Hills",
+    "country": "US",
+    "region": "North Carolina",
+    "stateCode": "NC",
+    "lat": 36.03072,
+    "lon": -75.67601
+  }
+]

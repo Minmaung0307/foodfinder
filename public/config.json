@@ -1,0 +1,17 @@
+{
+  "overpassEndpoint": "https://overpass-api.de/api/interpreter",
+  "liveSearchEnabled": true,
+  "radiusMeters": 4828.032,
+  "resultLimit": 2000,
+  "cloudEnabled": true,
+  "firebase": {
+    "apiKey": "AIzaSyCHpkLETlqCt3JowDjEDdqMVd47Q_qgUvg",
+    "authDomain": "foodfinder-mm.firebaseapp.com",
+    "projectId": "foodfinder-mm",
+    "appId": "1:636705045947:web:cd900bde100d918d78189e"
+  },
+  "overpassEndpoints": [
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter"
+  ]
+}

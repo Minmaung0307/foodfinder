@@ -1,4 +1,1 @@
-{
-  "indexes": [],
-  "fieldOverrides": []
-}
+{"indexes":[{"collectionGroup":"ff_places","queryScope":"COLLECTION","fields":[{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"cityId","order":"ASCENDING"}]}],"fieldOverrides":[{"collectionGroup":"ff_media","fieldPath":"data","indexes":[]},{"collectionGroup":"ff_notes","fieldPath":"message","indexes":[]},{"collectionGroup":"ff_places","fieldPath":"description","indexes":[]}]}

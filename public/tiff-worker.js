@@ -1,0 +1,2 @@
+importScripts('./vendor/tiff/pako.min.js','./vendor/tiff/UTIF.js');
+onmessage=({data})=>{try{const pages=UTIF.decode(data),page=pages[0];if(!page)throw Error('Empty TIFF');const w=page.t256?.[0],h=page.t257?.[0];if(!w||!h||w*h>20000000)throw Error('Resize TIFF below 20 megapixels.');UTIF.decodeImage(data,page);const rgba=UTIF.toRGBA8(page);postMessage({width:page.width,height:page.height,rgba:rgba.buffer},[rgba.buffer]);}catch(e){postMessage({error:e.message||'Unsupported TIFF. Export as PNG or JPG.'});}};

@@ -1,9 +1,48 @@
 rules_version = '2';
-
 service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
-    }
+ match /databases/{database}/documents {
+  function googleUser() { return request.auth != null && request.auth.token.email_verified == true && request.auth.token.firebase.sign_in_provider == 'google.com'; }
+  function admin() { return googleUser() && request.auth.token.email in ['minmaung0307@gmail.com', 'panna07@gmail.com']; }
+  function freshAdmin() { return admin() && request.time.toMillis() / 1000 - request.auth.token.auth_time < 900; }
+  function str(v,n) { return v is string && v.size() <= n; }
+  function place(d) {
+   return d.keys().hasAll(['name','category','cuisine','city','country','cityId','address','phone','website','hours','description','status','lat','lon','hasImage','revision','createdAt','updatedAt'])
+   && d.keys().hasOnly(['name','category','cuisine','city','country','cityId','address','phone','website','hours','description','status','lat','lon','hasImage','revision','createdAt','updatedAt','dishesText','menuUrl'])
+   && str(d.name,180) && d.name.size()>0 && d.category in ['restaurant','cafe','quick','sweet']
+   && str(d.cuisine,150) && str(d.city,120) && d.city.size()>0 && d.country.matches('^[A-Z]{2}$')
+   && str(d.cityId,20) && d.cityId.size()>0 && str(d.address,350) && d.address.size()>0
+   && str(d.phone,40) && str(d.website,600) && (d.website=='' || d.website.matches('^https://[^ ].*'))
+   && str(d.get('dishesText',''),1500) && str(d.get('menuUrl',''),600) && (d.get('menuUrl','')=='' || d.menuUrl.matches('^https://[^ ].*'))
+   && str(d.hours,500) && str(d.description,2500) && d.status in ['draft','published','archived']
+   && d.lat is number && d.lat>=-90 && d.lat<=90 && d.lon is number && d.lon>=-180 && d.lon<=180
+   && d.hasImage is bool && d.revision is int && d.createdAt is timestamp && d.updatedAt==request.time;
   }
+  match /ff_admin_access/{id} { allow get: if admin(); }
+  match /ff_places/{id} {
+   allow get: if admin() || resource.data.status=='published';
+   allow list: if admin() || (resource.data.status=='published' && request.query.limit<=200);
+   allow create: if freshAdmin() && place(request.resource.data) && request.resource.data.revision==1 && request.resource.data.createdAt==request.time;
+   allow update: if freshAdmin() && place(request.resource.data) && request.resource.data.revision==resource.data.revision+1 && request.resource.data.createdAt==resource.data.createdAt;
+   allow delete: if freshAdmin();
+  }
+  match /ff_media/{id} {
+   allow read: if admin() || get(/databases/$(database)/documents/ff_places/$(id)).data.status=='published';
+   allow create, update: if freshAdmin() && getAfter(/databases/$(database)/documents/ff_places/$(id)).data.hasImage==true && request.resource.data.keys().hasOnly(['data']) && str(request.resource.data.data,160023) && request.resource.data.data.matches('^data:image/webp;base64,[A-Za-z0-9+/=]+$');
+   allow delete: if freshAdmin();
+  }
+  function validNote(d,uid) {
+   return d.keys().hasAll(['uid','type','name','city','url','message','status','createdAt','updatedAt']) && d.keys().hasOnly(['uid','type','name','city','url','message','status','createdAt','updatedAt'])
+   && d.uid==uid && d.type in ['place','correction','privacy','other'] && str(d.name,180) && d.name.size()>0
+   && str(d.city,180) && str(d.url,600) && (d.url=='' || d.url.matches('^https://[^ ].*')) && str(d.message,3000) && d.message.size()>=10
+   && d.status=='pending' && d.createdAt==request.time && d.updatedAt==request.time;
+  }
+  match /ff_notes/{uid} {
+   allow get: if admin() || (googleUser() && request.auth.uid==uid);
+   allow list: if admin();
+   allow create: if googleUser() && request.auth.uid==uid && validNote(request.resource.data,uid);
+   allow update: if (googleUser() && request.auth.uid==uid && resource.data.status=='reviewed' && validNote(request.resource.data,uid)) || (freshAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','updatedAt']) && request.resource.data.status=='reviewed' && request.resource.data.updatedAt==request.time);
+   allow delete: if freshAdmin() || (googleUser() && request.auth.uid==uid);
+  }
+  match /{document=**} { allow read, write: if false; }
+ }
 }

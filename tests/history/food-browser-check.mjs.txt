@@ -1,0 +1,2 @@
+// Location-first flow replaces the previous query-per-request flow.
+import './area-browser-check.mjs';

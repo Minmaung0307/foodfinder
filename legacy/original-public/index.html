@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WorldFoodExplorer</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo">🍽️</span><h1>WFE</h1></div>
+
+    <!-- Search + Controls in topbar -->
+    <div class="topbar-controls">
+      <div class="search-row">
+        <div class="ac">
+          <input id="dish" type="search" placeholder="Search: မုန့်/မုန့်တီ/coffee/fried rice..." autocomplete="off" />
+          <ul id="acList" class="ac-list" hidden></ul>
+        </div>
+        <button id="btnSearch" class="icon-btn" aria-label="Search">🔍</button>
+      </div>
+
+      <div class="control-row">
+        <label class="select-wrap">
+          <span class="lbl">Meal</span>
+          <select id="mealSelect">
+            <option value="">Any</option>
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+          </select>
+        </label>
+
+        <div class="filter-wrap">
+          <button id="btnFilter" class="btn outline">Filters ⚙️</button>
+          <div id="filterMenu" class="filter-menu" hidden>
+            <label><input type="checkbox" class="f" value="openNow"> Open now</label>
+            <label><input type="checkbox" class="f" value="price1"> $</label>
+            <label><input type="checkbox" class="f" value="price2"> $$</label>
+            <label><input type="checkbox" class="f" value="price3"> $$$</label>
+            <label><input type="checkbox" class="f" value="rating4"> ≥ 4★</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content-only">
+    <div id="countBar" class="muted"></div>
+    <div id="suggestBar" class="muted"></div>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <footer class="footer">
+    <button id="btnLocate" class="btn solid">📍 Use my location</button>
+  </footer>
+
+  <!-- Hidden map for PlacesService (required) -->
+  <div id="map" style="width:0;height:0;overflow:hidden"></div>
+
+  <template id="cardTpl">
+    <article class="card">
+      <div class="card-image">
+        <img class="img" alt="" loading="lazy" />
+        <button class="fav" title="Add to favorites">☆</button>
+      </div>
+      <div class="card-body">
+        <div class="card-head">
+          <h3 class="title"></h3>
+          <span class="badge"></span>
+        </div>
+        <p class="addr"></p>
+        <div class="pill-row"></div>
+        <div class="btn-row">
+          <button class="btn outline details">Details</button>
+          <a class="btn map" target="_blank" rel="noopener">Navigate</a>
+          <a class="btn outline site" target="_blank" rel="noopener">Website</a>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <dialog id="dlg" class="dialog">
+    <div class="dialog-wrap">
+      <header class="dialog-head">
+        <h3 id="dlgTitle">Details</h3>
+        <button id="dlgClose" class="icon-btn" aria-label="Close">✕</button>
+      </header>
+      <section id="dlgBody" class="dialog-body"></section>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEb6TbKs1ex-9S8PQe2bd9k8oaXe34goQ&libraries=places&callback=__WFE_onMapsReady&loading=async"
+    async defer></script>
+</body>
+</html>
