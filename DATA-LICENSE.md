@@ -39,3 +39,8 @@ OBX is treated as an Outer Banks area shortcut, KDH as Kill Devil Hills, and NC 
 ## v1.2 food vocabulary
 
 `public/food.js` contains editorial Burmese/English search vocabulary, not a menu database. Cuisine-based matches are labelled as related places to ask. No restaurant's dish availability has been invented. Administrator menu descriptions and links remain subject to the contributor's rights and responsibility.
+
+## Venue website image references
+`public/data/venue-photos.json` records externally hosted images and their official website sources. Images are not bundled and are not covered by the OSM/GeoNames data licenses. Rights remain with their owners. Source credit is shown on each external-photo card. Admin-uploaded covers are supplied by the editor.
+
+Additional v1.11 photo source sites: https://www.captnfranks.com/ , https://www.artsplaceobx.net/ , https://www.barefootbernies.com/ , https://chilli-peppers.com/ . OpenStreetMap image links retain source attribution; linked photographs are not relicensed by the ODbL data license.

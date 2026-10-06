@@ -1,3 +1,7 @@
+**Current: v1.11.** See [PILLS-PHOTOS-MM.md](PILLS-PHOTOS-MM.md): pastel navigation pills, uncropped images and expanded photo sources.
+
+**Current: v1.10.** See [NAV-PHOTOS-MM.md](NAV-PHOTOS-MM.md). Active navigation, Saved/Explore routing and venue card photos.
+
 **v1.9.1:** Restored the working Use my location and Choose a town hero buttons. Mobile navbar and admin improvements remain. Deploy hosting only if v1.9 rules were already deployed.
 
 **Current: v1.9.** Read [ADMIN-MOBILE-MM.md](ADMIN-MOBILE-MM.md). Deploy Hosting AND Firestore rules for admin access.

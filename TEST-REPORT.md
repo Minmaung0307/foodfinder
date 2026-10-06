@@ -1,3 +1,11 @@
+# v1.11
+
+16 Node tests passed. Browser navigation/photo suite passed with added checks for 999px pill radius, 20px text padding and object-fit:contain. Real Black Pelican photo/source link loaded; fallback tested. Full photo screenshot inspected. Rebuilt starter preserves all 17 collections and 2,831 records, including 16 image URLs from original data. Seven venue website sources mapped; not every external image or all-world venue coverage is guaranteed. No production deploy.
+
+# v1.10 verification
+
+16 Node tests passed. Chrome regression passed: All/Saved exclusive active state; topbar Saved → Explore; All places exits saved view; browser Back/Forward; real Black Pelican official-host image loaded with nonzero dimensions/source link; forced image failure restores illustration without hiding the venue; no page errors. Screenshot inspected. Photo manifest is bounded to three verified official sites, not universal website scraping. Admin cover loading reuses existing permission-protected media reads. No new database schema or production deploy.
+
 # v1.9 verification
 
 - Six Firestore emulator scenarios passed: both approved Google emails authorized, wrong/unverified/provider-mismatched users denied, schema/media/private inbox protections retained.
