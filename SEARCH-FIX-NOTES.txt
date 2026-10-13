@@ -1,0 +1,86 @@
+504 recovery and Poughkeepsie snapshot — version 1.15.0 — 2026-10-13
+
+Confirmed: the user's primary query returned 504. Our exact query against the backup also returned 504. A lower-memory main-provider probe returned 406. Increasing client timeouts alone cannot guarantee overloaded public services will respond.
+
+Concrete fallback: a one-time public OSM area extract succeeded. The app now bundles 163 named mapped food records within 3 straight-line miles of the Poughkeepsie center, with OSM links and snapshot date. Combined with official listings and existing deduplication, a fresh browser shows 164 places even when BOTH Overpass servers return 504. Filipino Hapag Bistro, Indian Kismat, Thai Spice and several Chinese-tagged listings are included. Menus/current operating status are not independently verified. Snapshot scope and date are visible; it is not a complete directory or coverage of larger radii.
+
+Network/cache changes: small-area requests declare 64 MiB max memory rather than the server's larger default (larger radii use 256 MiB). Server query allowance is 20s; client network timeout is 35s. Backup starts immediately after a retryable failure. The last successful configured endpoint is tried first on future requests. Access/rate-limit responses are still respected. Up to 18 cached searches are retained. Results from the same center survive query/radius changes and older cache-key versions, but combined partial caches never count as fresh complete responses. Fresh provider records override bundled records with the same OSM ID. Partial-cache fallback is labeled partial rather than incorrectly labeled as hitting the 2,000-record cap.
+
+Validation: 29 Node tests pass. Browser outage test with the REAL bundled snapshot and simulated 504 responses shows 164 places, paging, snapshot date, Filipino Hapag Bistro and Indian Kismat. Official-source merge and browse-group regressions pass. The 47-record unit fixture is synthetic and is not the local real-world count. Live Overpass success remains unverified; snapshot retrieval succeeded against the public OSM map API. Nothing has been deployed.
+
+Previous release notes (historical):
+
+Responsive search design and Korean/Chinese vocabulary — version 1.14.0 — 2026-10-13
+
+Fixed the visual root cause: the new browse controls had reused the legacy .browse-groups four-column grid class. Labels, chips, the select and help text each became separate columns, stretching the select and narrowing the chips. The new .search-discovery component has its own scoped layout. Desktop uses a wide wrapping chip area and a compact cuisine selector. Mobile stacks labels, chips and selector in reading order. Cuisine select stays 48px high; group buttons have at least 44px targets. Location controls wrap, the radius uses full mobile width, and restaurant cards become one column below 540px. Help text is shortened.
+
+Added Korean, Korean BBQ and Korean hot pot cuisine choices. Search vocabulary includes Korean barbecue/barbeque/KBBQ, Korean hotpot/hot pot and Burmese equivalents, plus Chinese and Burmese Chinese restaurant terms. Generic hot pot also considers Korean cuisine. Related Korean listings are labeled suggestions; a general Korean tag does not prove a BBQ or hot-pot menu. Data-source limitations remain unchanged; this release does not add verified local Korean/Chinese venues. Cache version updated.
+
+Validation: 27 unit tests pass; category browsing browser regression passes. Responsive browser checks pass at 320, 390, 540, 768, 1024 and 1440px with no horizontal overflow, fixed-height selects, chip bounds/touch sizes and correct stacked layout. Phone (390), tablet (768) and desktop (1440) control screenshots were visually inspected. No production deployment was performed.
+
+Previous release notes (historical):
+
+Browse groups and search state update — version 1.13.0 — 2026-10-13
+
+Browse controls: All places, Grocery & deli, Restaurants, Food courts, Smoothies & juice, Subs & sandwiches, Subway, Pizza and Ice cream. A cuisine selector includes Filipino, Pakistani, Indian, Vietnamese, Lao, Thai, Japanese and Chinese. Selecting a control sets the search and runs a provider request; it does not merely hide loaded cards. All places clears query filters and requests all supported place types. Existing search by name and town selection remain available.
+
+Mapped amenity metadata is retained so a food court can match even when its name does not contain those words. Smoothy/smoothie/smoothies and sub way/Subway aliases are recognized. Subway is not classified as a grocery. Search cache version is updated.
+
+Loading state: the count says Searching rather than 0 places while a request is pending. Progress from the provider, including rate-limit queue waits and backup attempts, is displayed. The explanation does not claim no matches before completion. A failed request is identified as a service failure, even when local records remain. Typing without submitting explicitly asks the user to press Search. The old no-match behavior never replaces matches with unrelated businesses.
+
+Verification: 26 unit tests passed. Three browser suites passed using simulated provider responses: group and cuisine searches; All places broad reload; delayed and failed requests; mobile layout; official Adams data during outages; grocery aliases; town changes; remembered town; explicit GPS use. This validates behavior, not real-world local coverage.
+
+Unresolved coverage: no broader business provider is connected. The six official supplemental records from 1.12 remain. All places means all supported types available from the configured data sources within the chosen radius, not every real business. The user's current town and missing business names were requested but not supplied during this turn, so those specific missing Publix, Filipino, Pakistani and Indian businesses have not been checked. The project still has a 2,000-record provider cap, map-data gaps and no guaranteed menu coverage. No deployment was performed.
+
+Previous release notes (historical):
+
+Coverage update — version 1.12.0 — 2026-10-13
+
+The screenshot showed 100 miles selected but only one Adams. Search improvements alone cannot fill missing provider data. This release adds an independently loaded official-business supplement with five Adams branches and Miss Saigon. Branch coordinates and addresses have source URLs and a check date. Official records are retained if the map provider fails, and nearby duplicates from the map provider are merged without combining separate branches.
+
+A 30-mile radius option is added. From the included Poughkeepsie center the five Adams distances are approximately 2.2, 8.8, 15.6, 19.4 and 28.2 straight-line miles; road distances differ. The fifth branch is Middletown. Radius filtering remains geographic and works for any selected town.
+
+Vietnamese, Lao/Laotian, Thai, Indian, Pakistani and Filipino English/Burmese aliases are included. Steak/stakes, lobster/lobsters, soup/soups and hot pot/hot pots resolve consistently. Cuisine suffixes such as Thai restaurants work. Red Pot remains a literal venue search, not an assumed alias for hot pot. Known grocery-brand searches can also find shops classified outside the food-shop categories. Query caches are versioned again so previous incomplete responses are not reused.
+
+Validation: 25 Node tests passed. Two browser suites passed: actual sourced Adams data stays visible with only one simulated OSM branch or a simulated provider outage; duplicates merge; official source links work; Burmese Vietnamese search finds Miss Saigon. Grocery aliases, dish searches, mobile layout, remote-town selection, remembered town and explicit GPS behavior also passed. Public Adams and Miss Saigon business pages were read successfully. The attempted live Overpass request returned a non-JSON response, so complete live provider coverage is not verified.
+
+Remaining work/limits: no comprehensive business-search provider has been connected. These changes do not establish that every Thai, Lao, Indian, Pakistani, Filipino, steak, lobster, soup or Red Pot business is present in the provider data. A broader licensed directory integration needs a configured provider account and credentials. Nothing was deployed; upload the new public folder through the existing hosting workflow to update the live site.
+
+Previous release notes (historical):
+
+Grocery and remote-town update — 2026-10-13
+
+Publix, Food Lion / foodlion, Harris Teeter / harry teater / harry teeter / harris teater resolve to canonical brand searches. Grocery, supermarket and deli tags are retained on mapped places and displayed as Grocery & deli. Sushi, subs, sandwiches (including sandwish), cakes and hot-bar/prepared-food searches request grocery shops and show them as related suggestions. Branch menus, counter hours and seating are not asserted. Direct menu/listing matches remain separate.
+
+Choose / change town is now next to Near me. Any supported town can be selected without GPS; the last manually selected town is remembered locally. Search and radius changes keep that town. GPS is requested only through an explicit location button. Remote search no longer falls back to current GPS for area selections; the public picker offers towns, not starter-only regions. Stale city choices are cleared immediately as the user types.
+
+Validation: 21 Node tests pass. A mobile-browser test with simulated provider responses passes for store aliases, dish searches, Poughkeepsie-to-Los-Angeles changes, query preservation on radius change, remembered town after reload, explicit GPS use, and no page errors or horizontal overflow. These are functional tests, not verification of real branch coverage. Live coverage remains dependent on OpenStreetMap and the selected radius. This update is packaged only; it has not been deployed.
+
+Usage: Choose / change town -> type city and state -> select the town -> choose radius -> enter store or food -> Search. Use Near me only when you want your actual current location.
+
+Previous release notes (historical):
+
+FoodFinder search fixes — 2026-10-13
+
+Root causes found in the supplied source:
+- Search only filtered the previously loaded nearby collection.
+- Nearby queries excluded supermarkets, delis and other food shops.
+- Udon and Pho had no dish/cuisine vocabulary.
+- Nearby and targeted searches shared a query-independent cache.
+- Radius changes erased the query; retry reused fresh cache.
+- Zero matches silently showed unrelated places.
+- Broad area results are capped at 2,000 records, not necessarily nearest first.
+
+Changes:
+Search now requests query-specific mapped results in the selected radius and merges them with existing local results. Query-specific caches use a new version. Retry forces a request. Radius changes preserve the query. Food shops, markets, bars and pubs are included. Udon, ramen and pho have related-cuisine suggestions explicitly labeled as unconfirmed. Alternative names and brands are searchable; NB96 / NB 96 spacing is tolerated. Direct matches precede related suggestions. No matches remain an honest empty state with a Google Maps search link. Provider failure and stale-cache messages remain visible.
+
+Verification:
+19 Node tests passed, including synthetic reported-name/dish cases, Poughkeepsie and LA location resolution, provider request contents, cache separation, forced refresh, stale recovery and cancellation. JavaScript syntax checks passed. These tests do not establish that the named real-world businesses exist in the provider database. A live Overpass verification attempt failed to connect from this environment. Browser end-to-end validation was not run.
+
+Delivery:
+This is a complete edited copy of the supplied project. Original ZIP is untouched. Nothing has been deployed. Existing Firebase configuration is retained. Historical documentation describes older search behavior; this file describes the delivered changes.
+
+Remaining coverage limits:
+OpenStreetMap is not a complete business or menu directory. This patch cannot guarantee all Adams, Saigon, Pho, NB96 or LA udon venues will appear. The default radius is still 3 miles; choose a larger radius for suburban venues or a large city. Requests still have provider timeouts, rate limits and a 2,000-record cap. A separate licensed business-search provider would be needed to broaden coverage beyond OSM; no paid provider account, credentials or billing have been configured.
+
+Provider query reference: https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL

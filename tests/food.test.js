@@ -14,7 +14,7 @@ test('nearby results honor radius and closest first',()=>{
  const center={lat:36,lon:-75};const places=[{id:'far',name:'Cafe Far',category:'cafe',lat:36.1,lon:-75},{id:'near',name:'Cafe Near',category:'cafe',lat:36.001,lon:-75},{id:'middle',name:'Cafe Middle',category:'cafe',lat:36.02,lon:-75}];
  assert.deepEqual(selectFoodPlaces(places,{query:'ကော်ဖီ',center,radius:5000}).map(p=>p.id),['near','middle']);
  assert.notEqual(liveCacheKey(center,5000,'coffee'),liveCacheKey(center,10000,'coffee'));
- assert.equal(liveCacheKey(center,5000,'coffee'),liveCacheKey(center,5000,'mohinga'));
+ assert.notEqual(liveCacheKey(center,5000,'coffee'),liveCacheKey(center,5000,'mohinga'));
 });
 test('targeted provider queries and external maps use food and actual search center',()=>{
  const c={lat:36,lon:-75};const q=buildFoodQuery(c,{query:'မုန့်တီ',radius:10000});assert.match(q,/around:10000,36,-75/);assert.match(q,/burmese/);assert.match(q,/nwr.food/);

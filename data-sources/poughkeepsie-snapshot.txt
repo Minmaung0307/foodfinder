@@ -1,0 +1,16 @@
+Poughkeepsie map snapshot — downloaded 2026-10-13
+Source: OpenStreetMap API 0.6 map export, https://api.openstreetmap.org/api/0.6/map
+Attribution: © OpenStreetMap contributors. Database license: ODbL 1.0, https://opendatacommons.org/licenses/odbl/1-0/ . https://www.openstreetmap.org/copyright
+
+Five successful bounded map reads were used after the full area and one quadrant exceeded the documented 50,000-node response limit:
+-73.9793,41.6569,-73.92095,41.7004
+-73.9793,41.7004,-73.92095,41.7439
+-73.92095,41.7004,-73.8626,41.7439
+-73.92095,41.6569,-73.891775,41.7004
+-73.891775,41.6569,-73.8626,41.7004
+
+Objects were deduplicated by type/id. Named objects with supported food amenities or food-shop tags were selected. Nodes use mapped coordinates; ways use the midpoint of bounds of their node coordinates. Multipolygon relations use available complete outer ways. Records missing geometry were not invented. Food-only source elements are supplied in poughkeepsie-food-elements.json. OSM editor identities and unrelated map objects are not included.
+
+The selected elements were converted using public/core.js fromOSM and filtered with the app's haversine distance to within 4,828.032 meters of 41.70037,-73.92097. 163 mapped records remain, including 72 tagged amenity=restaurant. These are records, not an independently verified count of currently operating distinct businesses. They are supplied as the Poughkeepsie bundle in public/data/starter.json; the full derived directory is downloadable via the site's existing starter-data link.
+
+The snapshot is a one-time local supplement for this area, not a runtime integration with the OSM editing API. App users continue to refresh via Overpass. The snapshot may age; current hours, services and availability require confirmation. It does not cover the whole 30/100-mile region or other cities.
